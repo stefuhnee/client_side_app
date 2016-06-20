@@ -33,7 +33,7 @@ PlantsController.prototype.addPlant = function() {
 };
 
 PlantsController.prototype.deletePlant = function(plant) {
-  this.$http.delete(`http://localhost:3000/${plant._id}`)
+  this.$http.delete(`http://localhost:3000/plants/${plant._id}`)
   .then(() => {
     this.plants.splice(this.plants.indexOf(plant), 1);
   }, (err) => {
@@ -42,10 +42,16 @@ PlantsController.prototype.deletePlant = function(plant) {
 };
 
 PlantsController.prototype.updatePlant = function(plant, updatedPlant) {
-  let existingPlant = this.plants[this.plants.indexOf(plant)];
-  existingPlant.commonName = updatedPlant.commonName;
-  existingPlant.scientificName = updatedPlant.scientificName;
-  existingPlant.medicinalUses = updatedPlant.medicinalUses;
-  existingPlant.nutritionalValue = updatedPlant.nutritionalValue;
-  existingPlant.zone = updatedPlant.zone;
+  this.$http.put('http://localhost:3000/plants/', this._id)
+    .then(() => {
+      let existingPlant = this.plants[this.plants.indexOf(plant)];
+      existingPlant.commonName = updatedPlant.commonName;
+      existingPlant.scientificName = updatedPlant.scientificName;
+      existingPlant.medicinalUses = updatedPlant.medicinalUses.split(',');
+      existingPlant.nutritionalValue = updatedPlant.nutritionalValue.split(',');
+      existingPlant.zone = updatedPlant.zone;
+      updatedPlant = null;
+    }, (err) => {
+      console.log(err);
+    });
 };
