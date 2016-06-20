@@ -1,0 +1,39 @@
+'use strict';
+
+const express = require('express');
+const app = express();
+const bodyParser = require('body-parser').json();
+const mongoose = require('mongoose');
+const morgan = require('morgan');
+const cors = require('cors');
+const plantRouter = require('./route/plant-routes');
+const supplementRouter = require('./route/supplement-routes');
+const authRouter = require('./route/auth-routes');
+
+const dbPort = process.env.MONGOLAB_URI || 'mongodb://localhost/dev_db';
+mongoose.connect(dbPort);
+
+app.use(morgan('dev'));
+
+app.use(cors());
+
+app.use(bodyParser);
+
+app.use('/plants', plantRouter);
+
+app.use('/supplements', supplementRouter);
+
+app.use('/', authRouter);
+
+app.all('*', (req, res) => {
+  res.status(404).json({Message:'Not Found'});
+});
+
+app.use((err, req, res, next) => {
+  res.send('Error: ', err.message);
+  next(err);
+});
+
+app.listen(3000, () => {
+  console.log('listening on 3000');
+});
