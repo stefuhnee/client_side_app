@@ -46,7 +46,7 @@ router.post('/', (req, res, next) => {
   }
 });
 
-router.delete('/:id', jwtAuth, (req, res, next) => {
+router.delete('/:id', (req, res, next) => {
   let _id = req.params.id;
   Supplement.findOneAndRemove({_id}, null, (err) => {
     if (err) return next(err);

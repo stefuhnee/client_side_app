@@ -32,19 +32,19 @@ SupplementsController.prototype.addSupplement = function() {
   });
 };
 
-SupplementsController.prototype.deleteSupplement = function(plant) {
-  this.$http.delete(`http://localhost:3000/supplements/${plant._id}`)
+SupplementsController.prototype.deleteSupplement = function(supplement) {
+  this.$http.delete(`http://localhost:3000/supplements/${supplement._id}`)
   .then(() => {
-    this.supplements.splice(this.supplements.indexOf(plant), 1);
+    this.supplements.splice(this.supplements.indexOf(supplement), 1);
   }, (err) => {
     console.log(err);
   });
 };
 
-SupplementsController.prototype.updateSupplement = function(plant, updatedSupplement) {
+SupplementsController.prototype.updateSupplement = function(supplement, updatedSupplement) {
   this.$http.put('http://localhost:3000/supplements/', this._id)
     .then(() => {
-      let existingSupplement = this.supplements[this.supplements.indexOf(plant)];
+      let existingSupplement = this.supplements[this.supplements.indexOf(supplement)];
       existingSupplement.name = updatedSupplement.name;
       existingSupplement.medicinalEffects = updatedSupplement.medicinalEffects.split(',');
       existingSupplement.sideEffects = updatedSupplement.sideEffects.split(',');

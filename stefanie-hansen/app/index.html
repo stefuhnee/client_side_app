@@ -40,12 +40,12 @@
         <input type="text" ng-model="pc.newPlant.nutritionalValue" placeholder="Nutritional Value" />
         <input type="number" ng-model="pc.newPlant.zone" placeholder="Zone" />
 
-        <button type="submit">Add a Plant<button>
+        <button type="submit">Add a Plant</button>
       </form>
 
     </section>
 
-    <section ng-controller="SupplementController as sc" ng-init="sc.getSupplements()">
+    <section ng-controller="SupplementsController as sc" ng-init="sc.getSupplements()">
         <h1> Supplements </h1>
 
         <ul ng-repeat="supplement in sc.supplements">
@@ -70,7 +70,7 @@
           <input type="text" ng-model="sc.newSupplement.medicinalEffects" placeholder="Medicinal Effects" />
           <input type="text" ng-model="sc.newSupplement.side Effects" placeholder="Side Effects" />
 
-          <button type="submit">Add a Supplement<button>
+          <button type="submit">Add a Supplement</ button>
         </form>
 
     </section>
