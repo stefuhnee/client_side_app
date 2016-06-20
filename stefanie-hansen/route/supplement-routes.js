@@ -3,7 +3,6 @@
 const express = require('express');
 const router = express.Router();
 const Supplement = require('../model/supplement');
-const jwtAuth = require('../lib/jwt-auth');
 
 router.get('/', (req, res, next) => {
   Supplement.find({}, (err, data) => {
