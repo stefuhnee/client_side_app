@@ -1,7 +1,5 @@
 'use strict';
 
-const angular = require('angular');
-
 module.exports = function(app) {
   app.controller('PlantsController', ['$http', PlantsController]);
 };
@@ -23,6 +21,10 @@ PlantsController.prototype.getPlants = function() {
 PlantsController.prototype.addPlant = function() {
   this.$http.post('http://localhost:3000/plants', this.newPlant)
   .then((res) => {
+    let medicinalUsesArray = res.data.medicinalUses[0].split(',');
+    res.data.medicinalUses = medicinalUsesArray;
+    let nutritionalValueArray = res.data.nutritionalValue[0].split(',');
+    res.data.nutritionalValue = nutritionalValueArray;
     this.plants.push(res.data);
     this.newPlant = null;
   }, (err) => {

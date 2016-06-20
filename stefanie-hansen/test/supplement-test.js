@@ -10,7 +10,7 @@ const expect = chai.expect;
 const request = chai.request;
 
 const dbPort = process.env.MONGLAB_URI;
-require('../server');
+require('../api-server');
 
 describe('Supplement router tests', () => {
 

@@ -7,7 +7,7 @@
     <title>Plants and Supplements</title>
 </head>
 
-<body data-ng-app="HealthApp">
+<body ng-app="HealthApp">
   <main>
 
     <section ng-controller="PlantsController as pc" ng-init="pc.getPlants()">
@@ -18,7 +18,31 @@
         <li>Medicinal Uses: {{plant.medicinalUses}}</li>
         <li>Nutritional Value: {{plant.nutritionalValue}}</li>
         <li>Zone: {{plant.zone}}</li>
+
+        <button ng-click="plant.editing = !plant.editing">Edit</button>
+
+        <form ng-submit="pc.updatePlant(plant, updatedPlant)" ng-hide="!plant.editing">
+          <input type="text" ng-model="updatedPlant.commonName" placeholder="{{plant.commonName}}" />
+          <input type="text" ng-model="updatedPlant.scientificName" placeholder="{{plant.scientificName}}" />
+          <input type="text" ng-model="updatedPlant.medicinalUses" placeholder="{{plant.medicinalUses}}" />
+          <input type="text" ng-model="updatedPlant.nutritionalValue" placeholder="{{plant.nutritionalValue}}" />
+          <input type="number" ng-model="updatedPlant.zone" placeholder="{{plant.zone}}" />
+          <button type="submit">Update Plant</button>
+          <button ng-click="pc.deletePlant(plant)" ng-hide="!plant.editing">Delete Plant</button>
+        </form>
+
       </ul>
+
+      <form ng-submit="pc.addPlant()">
+        <input type="text" ng-model="pc.newPlant.commonName" placeholder="Common Name" />
+        <input type="text" ng-model="pc.newPlant.scientificName" placeholder="Scientific Name" />
+        <input type="text" ng-model="pc.newPlant.medicinalUses" placeholder="Medicinal Uses" />
+        <input type="text" ng-model="pc.newPlant.nutritionalValue" placeholder="Nutritional Value" />
+        <input type="number" ng-model="pc.newPlant.zone" placeholder="Zone" />
+
+        <button type="submit">Add a Plant<button>
+      </form>
+
     </section>
 
     <section ng-controller="SupplementController as sc" ng-init="sc.getSupps()">
@@ -26,7 +50,7 @@
     </section>
 
   </main>
-    <script src="bundle.js"></script>
+  <script src="bundle.js"></script>
 </body>
 
 </html>

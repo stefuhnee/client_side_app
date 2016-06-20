@@ -11,7 +11,7 @@ const jwtAuth = require('../lib/jwt-auth');
 const dbPort = process.env.MONGOLAB_URI;
 
 process.env.MONGOLAB_URI = 'mongodb://localhost/test_db';
-require('../server');
+require('../api-server');
 
 describe('unit tests', () => {
   let authString;
