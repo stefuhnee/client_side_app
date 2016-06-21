@@ -21,9 +21,9 @@ SupplementsController.prototype.getSupplements = function() {
 SupplementsController.prototype.addSupplement = function() {
   this.$http.post('http://localhost:3000/supplements', this.newSupplement)
   .then((res) => {
-    let medicinalEffectsArray = res.data.medicinalEffects[0].split(',');
+    let medicinalEffectsArray = res.data.medicinalEffects[0].split(',') || res.data.medicinalEffects[0];
     res.data.medicinalEffects = medicinalEffectsArray;
-    let sideEffectsArray = res.data.sideEffects[0].split(',');
+    let sideEffectsArray = res.data.sideEffects[0].split(',') || res.data.sideEffects[0];
     res.data.sideEffects = sideEffectsArray;
     this.supplements.push(res.data);
     this.newSupplement = null;
@@ -42,13 +42,14 @@ SupplementsController.prototype.deleteSupplement = function(supplement) {
 };
 
 SupplementsController.prototype.updateSupplement = function(supplement, updatedSupplement) {
-  this.$http.put('http://localhost:3000/supplements/', this._id)
+  if (updatedSupplement.name) supplement.name = updatedSupplement.name;
+  if (updatedSupplement.medicinalEffects) supplement.medicinalEffects = updatedSupplement.medicinalEffects.split(',') || updatedSupplement.medicinalEffects;
+  if (updatedSupplement.sideEffects) supplement.sideEffects = updatedSupplement.sideEffects.split(',') || updatedSupplement.sideEffects;
+  this.$http.put('http://localhost:3000/supplements/', supplement)
     .then(() => {
-      let existingSupplement = this.supplements[this.supplements.indexOf(supplement)];
-      existingSupplement.name = updatedSupplement.name;
-      existingSupplement.medicinalEffects = updatedSupplement.medicinalEffects.split(',');
-      existingSupplement.sideEffects = updatedSupplement.sideEffects.split(',');
-      updatedSupplement = null;
+      this.supplements = this.supplements.map(s => {
+        return s._id === supplement._id ? supplement : s;
+      });
     }, (err) => {
       console.log(err);
     });

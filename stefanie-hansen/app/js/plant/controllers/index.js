@@ -21,9 +21,9 @@ PlantsController.prototype.getPlants = function() {
 PlantsController.prototype.addPlant = function() {
   this.$http.post('http://localhost:3000/plants', this.newPlant)
   .then((res) => {
-    let medicinalUsesArray = res.data.medicinalUses[0].split(',');
+    let medicinalUsesArray = res.data.medicinalUses[0].split(',') || res.data.medicinalUses[0];
     res.data.medicinalUses = medicinalUsesArray;
-    let nutritionalValueArray = res.data.nutritionalValue[0].split(',');
+    let nutritionalValueArray = res.data.nutritionalValue[0].split(',') || res.data.nutritionalValue[0];
     res.data.nutritionalValue = nutritionalValueArray;
     this.plants.push(res.data);
     this.newPlant = null;
@@ -42,15 +42,16 @@ PlantsController.prototype.deletePlant = function(plant) {
 };
 
 PlantsController.prototype.updatePlant = function(plant, updatedPlant) {
-  this.$http.put('http://localhost:3000/plants/', this._id)
+  if (updatedPlant.commonName) plant.commonName = updatedPlant.commonName;
+  if (updatedPlant.scientificName) plant.scientificName = updatedPlant.scientificName;
+  if (updatedPlant.medicinalUses) plant.medicinalUses = updatedPlant.medicinalUses.split(',') || updatedPlant.medicinalUses;
+  if (updatedPlant.nutritionalValue) plant.nutritionalValue = updatedPlant.nutritionalValue.split(',') || updatedPlant.nutritionalValue;
+  if (updatedPlant.zone) plant.zone = updatedPlant.zone;
+  this.$http.put('http://localhost:3000/plants/', plant)
     .then(() => {
-      let existingPlant = this.plants[this.plants.indexOf(plant)];
-      existingPlant.commonName = updatedPlant.commonName;
-      existingPlant.scientificName = updatedPlant.scientificName;
-      existingPlant.medicinalUses = updatedPlant.medicinalUses.split(',');
-      existingPlant.nutritionalValue = updatedPlant.nutritionalValue.split(',');
-      existingPlant.zone = updatedPlant.zone;
-      updatedPlant = null;
+      this.plants = this.plants.map(p => {
+        return p._id === plant._id ? plant : p;
+      });
     }, (err) => {
       console.log(err);
     });

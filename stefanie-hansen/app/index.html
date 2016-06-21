@@ -51,7 +51,7 @@
         <ul ng-repeat="supplement in sc.supplements">
           <li><strong>{{supplement.name}}</strong></li>
           <li>Medicinal Effects: {{supplement.medicinalEffects}}</li>
-          <li>Side EFfects: {{supplement.sideEffects}}</li>
+          <li>Side Effects: {{supplement.sideEffects}}</li>
 
           <button ng-click="supplement.editing = !supplement.editing">Edit</button>
 
@@ -68,7 +68,7 @@
         <form ng-submit="sc.addSupplement()">
           <input type="text" ng-model="sc.newSupplement.name" placeholder="Name" />
           <input type="text" ng-model="sc.newSupplement.medicinalEffects" placeholder="Medicinal Effects" />
-          <input type="text" ng-model="sc.newSupplement.side Effects" placeholder="Side Effects" />
+          <input type="text" ng-model="sc.newSupplement.sideEffects" placeholder="Side Effects" />
 
           <button type="submit">Add a Supplement</ button>
         </form>
