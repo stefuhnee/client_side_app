@@ -71,10 +71,10 @@ gulp.task('bundle', () => {
 });
 
 gulp.task('bundle:test', () => {
-  return gulp.src(__dirname + '/test/*_test.js')
+  return gulp.src(__dirname + '/test/controller-test.js')
     .pipe(webpack({
       output: {
-        filename: 'test_bundle.js'
+        filename: 'test-bundle.js'
       }
     }))
     .pipe(gulp.dest(__dirname + '/test'));
@@ -85,5 +85,5 @@ gulp.task('watch', () => {
   gulp.watch(['./*.js', './model/*.js', './route/*.js', './test/*.js', './lib/*.js'], ['linter', 'tests']);
 });
 
-gulp.task('default', ['linter', 'tests', 'bundle', 'copy'], () => {
+gulp.task('default', ['linter', 'bundle', 'copy'], () => {
 });

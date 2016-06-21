@@ -47,7 +47,7 @@ PlantsController.prototype.updatePlant = function(plant, updatedPlant) {
   if (updatedPlant.medicinalUses) plant.medicinalUses = updatedPlant.medicinalUses.split(',') || updatedPlant.medicinalUses;
   if (updatedPlant.nutritionalValue) plant.nutritionalValue = updatedPlant.nutritionalValue.split(',') || updatedPlant.nutritionalValue;
   if (updatedPlant.zone) plant.zone = updatedPlant.zone;
-  this.$http.put('http://localhost:3000/plants/', plant)
+  this.$http.put('http://localhost:3000/plants', plant)
     .then(() => {
       this.plants = this.plants.map(p => {
         return p._id === plant._id ? plant : p;

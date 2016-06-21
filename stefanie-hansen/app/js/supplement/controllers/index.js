@@ -12,6 +12,7 @@ function SupplementsController($http) {
 SupplementsController.prototype.getSupplements = function() {
   this.$http.get('http://localhost:3000/supplements')
   .then((res) => {
+    console.log('res data', res.data);
     this.supplements = res.data;
   }, (err) => {
     console.log(err);
@@ -45,7 +46,7 @@ SupplementsController.prototype.updateSupplement = function(supplement, updatedS
   if (updatedSupplement.name) supplement.name = updatedSupplement.name;
   if (updatedSupplement.medicinalEffects) supplement.medicinalEffects = updatedSupplement.medicinalEffects.split(',') || updatedSupplement.medicinalEffects;
   if (updatedSupplement.sideEffects) supplement.sideEffects = updatedSupplement.sideEffects.split(',') || updatedSupplement.sideEffects;
-  this.$http.put('http://localhost:3000/supplements/', supplement)
+  this.$http.put('http://localhost:3000/supplements', supplement)
     .then(() => {
       this.supplements = this.supplements.map(s => {
         return s._id === supplement._id ? supplement : s;

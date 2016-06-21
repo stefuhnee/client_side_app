@@ -2,6 +2,6 @@
 **/vendor/*
 **/*.min.js
 **/build/*
-**/test/*_bundle*
+**/test/*-bundle*
 *.md
 package.json
