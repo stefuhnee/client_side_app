@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="HealthApp">
 
 <head>
     <meta charset="utf-8">
@@ -7,10 +7,12 @@
     <title>Plants and Supplements</title>
 </head>
 
-<body ng-app="HealthApp">
-  <main>
+<body ng-controller="PlantsController as pc" ng-init="pc.getPlants()">
 
-    <section ng-controller="PlantsController as pc" ng-init="pc.getPlants()">
+  <item-directive></item-directive>
+
+
+
       <h1> Plants </h1>
       <ul ng-repeat="plant in pc.plants">
         <li><strong>{{plant.commonName}}</strong></li>
