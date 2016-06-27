@@ -9,10 +9,10 @@ function SupplementsController($http) {
   this.$http = $http;
 }
 
-SupplementsController.prototype.getSupplements = function() {
+SupplementsController.prototype.getSupplements = function($scope) {
   this.$http.get('http://localhost:3000/supplements')
   .then((res) => {
-    console.log('res data', res.data);
+    $scope.mode = 'list';
     this.supplements = res.data;
   }, (err) => {
     console.log(err);

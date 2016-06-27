@@ -9,9 +9,10 @@ function PlantsController($http) {
   this.$http = $http;
 }
 
-PlantsController.prototype.getPlants = function() {
+PlantsController.prototype.getPlants = function($scope) {
   this.$http.get('http://localhost:3000/plants')
   .then((res) => {
+    $scope.mode = 'list';
     this.plants = res.data;
   }, (err) => {
     console.log(err);
