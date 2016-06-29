@@ -19,6 +19,7 @@
   "devDependencies": {
     "angular": "^1.5.7",
     "angular-mocks": "^1.5.7",
+    "bluebird": "^3.4.1",
     "body-parser": "^1.15.1",
     "chai": "^3.5.0",
     "chai-http": "^2.0.1",

@@ -12,11 +12,15 @@
 
   <h1>Plants</h1>
 
-  <list-directive ng-repeat="plant in pc.plants" plant="plant" ng-show="mode === 'list'"></list-directive>
+  <ul>
+    <li ng-repeat="plant in pc.plants">
+    <list-directive plant="plant" ng-show="mode === 'list'" resource="plant" type="edit"></list-directive>
+    </li>
+  </ul>
 
   <item-directive ng-show="mode === 'item'" plant="plant"></item-directive>
 
-  <form-directive plant="plant"></form-directive>
+  <form-directive plant="plant" resource="plant" type="new"></form-directive>
 
 </section>
 

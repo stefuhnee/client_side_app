@@ -1,9 +1,11 @@
-<form ng-submit="pc.addPlant()">
-  <input type="text" ng-model="pc.newPlant.commonName" placeholder="Common Name" />
-  <input type="text" ng-model="pc.newPlant.scientificName" placeholder="Scientific Name" />
-  <input type="text" ng-model="pc.newPlant.medicinalUses" placeholder="Medicinal Uses" />
-  <input type="text" ng-model="pc.newPlant.nutritionalValue" placeholder="Nutritional Value" />
-  <input type="number" ng-model="pc.newPlant.zone" placeholder="Zone" />
+<form ng-submit="submit(plant)">
+  <h1>{{formMessage}}</h1>
+  <input type="text" ng-model="plant.commonName" placeholder="Common Name" />
+  <input type="text" ng-model="plant.scientificName" placeholder="Scientific Name" />
+  <input type="text" ng-model="plant.medicinalUses" placeholder="Medicinal Uses" />
+  <input type="text" ng-model="plant.nutritionalValue" placeholder="Nutritional Value" />
+  <input type="number" ng-model="plant.zone" placeholder="Zone" />
 
-  <button type="submit">Add a Plant</button>
+  <button type="submit" ng-click="update(plant)">Update {{type}}</button>
+  <button type="submit" ng-show="type === 'edit'" ng-click="delete(plant)">Delete {{type}}</button>
 </form>
