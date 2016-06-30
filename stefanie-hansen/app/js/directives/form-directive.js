@@ -4,7 +4,7 @@ module.exports = function(app) {
       scope: {
         type: '@',
         resource: '@',
-        updated: '@'
+        updated: '='
       },
       templateUrl: './templates/form.html',
       require: '^ngController',

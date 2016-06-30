@@ -18,7 +18,7 @@
 
 
     <div ng-show="rc.mode === 'item'">
-      <item-directive plant="plant"  currentresource = "currentresource"  ng-click="rc.toggleItem()">
+      <item-directive plant="plant"  ng-click="rc.toggleItem()" currentresource="rc.currentresource">
       </item-directive>
       <form-directive resource="plant" type="edit"></form-directive>
     </div>
@@ -35,7 +35,7 @@
     </ul>
 
     <div ng-show="rc.mode === 'item'">
-      <item-directive supplement="supplement" currentresource = "currentresource"  ng-click="toggleItem()">
+      <item-directive supplement="supplement" ng-click="toggleItem()" currentresource="rc.currentresource">
       </item-directive>
       <form-directive resource="supplement" type="edit"></form-directive>
     </div>
