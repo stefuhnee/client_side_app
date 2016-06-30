@@ -7,7 +7,11 @@ module.exports = function(app) {
         plant: '@',
         supplement: '@'
       },
-      templateUrl: './templates/list.html'
+      templateUrl: './templates/list.html',
+      link: function($scope, elem, attr, controller) {
+        $scope.toggleItem = controller.toggleItem;
+      },
+      require: '^ngController'
     };
   });
 };

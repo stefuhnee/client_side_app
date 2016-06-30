@@ -10,18 +10,12 @@ function ResourceController($http) {
   this.$http = $http;
   this.mode = 'list';
   this.editing = false;
-  this.resource = {};
-
-  this.editItem = function() {
-    console.log('editing toggle', this.editing);
-    this.editing === true ? this.editing = false : this.editing = true;
-  };
 
   this.toggleItem = function(resource) {
     console.log(resource);
-    this.resource = resource;
-    console.log('toggling');
+    if (resource) this.currentresource = resource;
     this.mode === 'list' ? this.mode = 'item' : this.mode = 'list';
+    return resource;
   }.bind(this);
 
   this.init = function() {

@@ -9,8 +9,6 @@ module.exports = function(app) {
       templateUrl: './templates/form.html',
       require: '^ngController',
       link: function($scope, elem, attr, controller) {
-        $scope.mode = 'list';
-
         let configMethods = {
           plant: function($scope) {
             $scope.delete = controller.deletePlant;
