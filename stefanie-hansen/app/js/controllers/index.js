@@ -34,6 +34,7 @@ function ResourceController($http) {
   };
 
   this.addPlant = function() {
+    console.log('adding');
     this.updated.zone = parseInt(this.updated.zone);
     $http.post('http://localhost:3000/plants', this.updated)
     .then((res) => {
@@ -45,19 +46,21 @@ function ResourceController($http) {
       this.updated = null;
     }, (err) => {
       console.log(err);
-    }).bind(this);
-  };
+    });
+  }.bind(this);
 
   this.deletePlant = function(plant) {
+    console.log('deleteing');
     $http.delete(`http://localhost:3000/plants/${plant._id}`)
     .then(() => {
       this.plants.splice(this.plants.indexOf(plant), 1);
     }, (err) => {
       console.log(err);
-    }).bind(this);
-  };
+    });
+  }.bind(this);
 
   this.updatePlant = function(plant, updated) {
+    console.log('updating');
     if (updated.commonName) plant.commonName = updated.commonName;
     if (updated.scientificName) plant.scientificName = updated.scientificName;
     if (updated.medicinalUses) plant.medicinalUses = updated.medicinalUses.split(',') || updated.medicinalUses;
@@ -70,8 +73,8 @@ function ResourceController($http) {
         });
       }, (err) => {
         console.log(err);
-      }).bind(this);
-  };
+      });
+  }.bind(this);
 
   this.getSupplements = function() {
     $http.get('http://localhost:3000/supplements')

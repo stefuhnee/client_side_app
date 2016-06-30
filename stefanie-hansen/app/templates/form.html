@@ -6,6 +6,7 @@
     </li>
   </ul>
 
-  <button type="submit" ng-click="update(resource, updated)">{{type | uppercase}} {{resource | uppercase}}</button>
-  <button type="submit" ng-show="type === 'edit'" ng-click="delete(resource)">DELETE {{resource | uppercase}}</button>
+<!-- need to route update/add depending on what's clicked -->
+  <button type="submit" ng-click="update(currentresource, updated)">{{type | uppercase}} {{resource | uppercase}}</button>
+  <button type="submit" ng-show="type === 'edit'" ng-click="delete(currentresource)">DELETE {{resource | uppercase}}</button>
 </form>

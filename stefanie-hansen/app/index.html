@@ -20,7 +20,7 @@
     <div ng-show="rc.mode === 'item'">
       <item-directive plant="plant"  ng-click="rc.toggleItem()" currentresource="rc.currentresource">
       </item-directive>
-      <form-directive resource="plant" type="edit" updated="rc.updated"></form-directive>
+      <form-directive resource="plant" type="edit" updated="rc.updated" currentresource="rc.currentresource"></form-directive>
     </div>
 
     <form-directive resource="plant" type="new" updated="rc.updated"></form-directive>
@@ -37,7 +37,7 @@
     <div ng-show="rc.mode === 'item'">
       <item-directive supplement="supplement" ng-click="toggleItem()" currentresource="rc.currentresource">
       </item-directive>
-      <form-directive resource="supplement" type="edit" updated="rc.updated"></form-directive>
+      <form-directive resource="supplement" type="edit" updated="rc.updated" currentresource="rc.currentresource"></form-directive>
     </div>
 
 
