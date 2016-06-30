@@ -18,42 +18,27 @@
     </li>
   </ul>
 
-  <item-directive ng-show="mode === 'item'" plant="plant"></item-directive>
+  <item-directive ng-show="mode === 'item'" plant="plant" resource="plant"></item-directive>
 
   <form-directive plant="plant" resource="plant" type="new"></form-directive>
 
 </section>
 
-    <section ng-controller="SupplementsController as sc" ng-init="sc.getSupplements()">
-        <h1> Supplements </h1>
+<section ng-controller="SupplementsController as sc" ng-init="sc.getSupplements()">
 
-        <ul ng-repeat="supplement in sc.supplements">
-          <li><strong>{{supplement.name}}</strong></li>
-          <li>Medicinal Effects: {{supplement.medicinalEffects}}</li>
-          <li>Side Effects: {{supplement.sideEffects}}</li>
+  <h1>Supplements</h1>
 
-          <button ng-click="supplement.editing = !supplement.editing">Edit</button>
+  <ul>
+    <li ng-repeat="supplement in sc.supplements">
+    <list-directive supplement="supplement" ng-show="mode === 'list'" resource="supplement" type="edit"></list-directive>
+    </li>
+  </ul>
 
-          <form ng-submit="sc.updateSupplement(supplement, updatedSupplement)" ng-hide="!supplement.editing">
-            <input type="text" ng-model="updatedSupplement.name" placeholder="{{supplement.name}}" />
-            <input type="text" ng-model="updatedSupplement.medicinalEffects" placeholder="{{supplement.medicinalEffects}}" />
-            <input type="text" ng-model="updatedSupplement.sideEffects" placeholder="{{supplement.sideEffects}}" />
-            <button type="submit">Update Supplement</button>
-            <button ng-click="sc.deleteSupplement(supplement)" ng-hide="!supplement.editing">Delete Supplement</button>
-          </form>
+  <item-directive ng-show="mode === 'item'" supplement="supplement" resource="supplement"></item-directive>
 
-        </ul>
+  <form-directive supplement="supplement" resource="supplement" type="new"></form-directive>
 
-        <form ng-submit="sc.addSupplement()">
-          <input type="text" ng-model="sc.newSupplement.name" placeholder="Name" />
-          <input type="text" ng-model="sc.newSupplement.medicinalEffects" placeholder="Medicinal Effects" />
-          <input type="text" ng-model="sc.newSupplement.sideEffects" placeholder="Side Effects" />
-
-          <button type="submit">Add a Supplement</ button>
-        </form>
-
-    </section>
-
+</section>
   </main>
   <script src="bundle.js"></script>
 </body>
