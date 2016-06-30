@@ -9,12 +9,20 @@ function ResourceController($http) {
   this.plants = [];
   this.$http = $http;
   this.mode = 'list';
+  this.editing = false;
+  this.resource = {};
 
-  this.toggleItem = function() {
-    console.log('toggling');
-    console.log('this.mode', this.mode);
-    this.mode === 'list' ? this.mode = 'item' : this.mode = 'list';
+  this.editItem = function() {
+    console.log('editing toggle', this.editing);
+    this.editing === true ? this.editing = false : this.editing = true;
   };
+
+  this.toggleItem = function(resource) {
+    console.log(resource);
+    this.resource = resource;
+    console.log('toggling');
+    this.mode === 'list' ? this.mode = 'item' : this.mode = 'list';
+  }.bind(this);
 
   this.init = function() {
     this.getSupplements();

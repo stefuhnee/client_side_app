@@ -3,13 +3,15 @@ module.exports = function(app) {
     return {
       scope: {
         type: '@',
-        resource: '='
+        plant: '@',
+        supplement: '@'
       },
-      templateUrl: './templates/item.html'
-      // require: '^ngController',
-      // link: function($scope, elem, attr, controller) {
-      //   $scope[$scope.resource] = controller[$scope.resource];
-      // }
+      templateUrl: './templates/item.html',
+      link: function($scope, elem, attr, controller) {
+        $scope.toggleItem = controller.toggleItem;
+        $scope.resource = controller.resource;
+      },
+      require: '^ngController'
     };
   });
 };
