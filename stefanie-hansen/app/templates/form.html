@@ -1,0 +1,11 @@
+<form ng-submit="submit(resource)">
+  <h1>{{formMessage}}</h1>
+  <ul>
+    <li ng-repeat="property in resourceProps">
+      <input type="text" ng-model="updated[property]" placeholder="{{property}}">
+    </li>
+  </ul>
+
+  <button type="submit" ng-click="update(resource, updated)">{{type | uppercase}} {{resource | uppercase}}</button>
+  <button type="submit" ng-show="type === 'edit'" ng-click="delete(resource)">DELETE {{resource | uppercase}}</button>
+</form>

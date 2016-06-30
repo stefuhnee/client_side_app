@@ -1,0 +1,17 @@
+<ul>
+  <li><strong>{{resource.commonName}}</strong></li>
+  <li><em>{{resource.scientificName}}</em></li>
+  <li>Medicinal Uses: {{resource.medicinalUses}}</li>
+  <li>Nutritional Value: {{resource.nutritionalValue}}</li>
+  <li>Zone: {{resource.zone}}</li>
+
+  <button ng-click="plant.editing = !plant.editing">Edit</button>
+</ul>
+
+<ul ng-if="resource === supplement">
+  <li><strong>{{resource.name}}</strong></li>
+  <li>Medicinal Effects: {{resource.medicinalEffects}}</li>
+  <li>Side Effects: {{resource.sideEffects}}</li>
+
+  <button ng-click="supplement.editing = !supplement.editing">Edit</button>
+</ul>

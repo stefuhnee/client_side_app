@@ -1,5 +1,6 @@
 const gulp = require('gulp');
 const mocha = require('gulp-mocha');
+const del = require('del');
 const webpack = require('webpack-stream');
 const lint = require('gulp-eslint');
 const opts = {
@@ -43,9 +44,15 @@ const opts = {
   }
 };
 
+const paths = {
+  html: './app/**/*.html',
+  js: './app/js/client.js',
+  tests: './test/*_test.js'
+};
 
 gulp.task('linter', () => {
-  return gulp.src(['./*.js', './model/*.js', './route/*.js', './test/*.js', './lib/*.js'])
+  return gulp.src(['./*.js', './model/*.js', './route/*.js', './test/*.js', './lib/*.js',
+  './app/**/*.js'])
     .pipe(lint(opts))
     .pipe(lint.format());
 });
@@ -55,35 +62,26 @@ gulp.task('tests', () => {
     .pipe(mocha({reporter: 'nyan'}));
 });
 
-gulp.task('copy', () => {
-  return gulp.src(__dirname + '/app/index.html')
-    .pipe(gulp.dest(__dirname + '/build'));
+gulp.task('bundle', ['clean'], () => {
+  return gulp.src(paths.js)
+    .pipe(webpack({output:{filename: 'bundle.js'}}))
+    .pipe(gulp.dest('build'));
 });
 
-gulp.task('bundle', () => {
-  return gulp.src(__dirname + '/app/js/client.js')
-    .pipe(webpack({
-      output: {
-        filename: 'bundle.js'
-      }
-    }))
-    .pipe(gulp.dest(__dirname + '/build'));
+gulp.task('clean', () => {
+  return del('./build/**/*');
+});
+
+gulp.task('copy', ['clean'],() => {
+  return gulp.src(paths.html)
+    .pipe(gulp.dest('./build'));
 });
 
 gulp.task('bundle:test', () => {
-  return gulp.src(__dirname + '/test/controller-test.js')
-    .pipe(webpack({
-      output: {
-        filename: 'test-bundle.js'
-      }
-    }))
-    .pipe(gulp.dest(__dirname + '/test'));
+  return gulp.src(paths.tests)
+    .pipe(webpack({output:{filename: 'test_bundle.js'}}))
+    .pipe(gulp.dest('./test'));
 });
 
-
-gulp.task('watch', () => {
-  gulp.watch(['./*.js', './model/*.js', './route/*.js', './test/*.js', './lib/*.js'], ['linter', 'tests']);
-});
-
-gulp.task('default', ['linter', 'bundle', 'copy'], () => {
+gulp.task('default', ['linter', 'bundle', 'clean', 'copy'], () => {
 });
