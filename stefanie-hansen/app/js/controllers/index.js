@@ -8,15 +8,19 @@ function ResourceController($http, $scope) {
   this.supplements = [];
   this.plants = [];
   this.$http = $http;
-  $scope.mode = 'list';
+  this.$scope = $scope;
 
-  this.toggleItem = function() {
+  this.toggleItem = function($scope) {
+    console.log('toggling');
+    console.log('scope', $scope);
     $scope.mode === 'list' ? $scope.mode === 'item' : $scope.mode === 'list';
   };
 
-  this.init = function() {
+  this.init = function($scope) {
     this.getSupplements();
     this.getPlants();
+    $scope.mode = 'list';
+    console.log($scope);
   };
 
   this.getPlants = function() {
