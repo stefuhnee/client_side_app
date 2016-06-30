@@ -3,7 +3,9 @@ module.exports = function(app) {
     return {
       scope: {
         type: '@',
-        resource: '@'
+        resource: '=',
+        plant: '@',
+        supplement: '@'
       },
       templateUrl: './templates/list.html'
     };

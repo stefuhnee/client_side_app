@@ -10,7 +10,7 @@ function ResourceController($http, $scope) {
   this.$http = $http;
   $scope.mode = 'list';
 
-  this.toggleMode = function() {
+  this.toggleItem = function() {
     $scope.mode === 'list' ? $scope.mode === 'item' : $scope.mode === 'list';
   };
 

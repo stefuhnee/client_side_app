@@ -13,17 +13,16 @@
     <h1>Plants</h1>
 
     <ul>
-      <list-directive ng-show="mode === 'list'" resource="plant" type="edit"></list-directive>
+      <list-directive ng-repeat="plant in rc.plants" ng-show="mode === 'list'" resource="plant" plant="plant" type="edit" ng-click="rc.toggleItem()"></list-directive>
     </ul>
 
 
-    <div ng-repeat="plant in rc.plants">
-      <item-directive ng-show="mode === 'item'" resource="plant">
+    <div ng-show="mode === 'item'">
+      <item-directive resource="plant" ng-click="rc.toggleItem()">
       </item-directive>
       <form-directive resource="plant" type="edit"></form-directive>
     </div>
 
-    <button ng-click="rc.toggleMode()">See {{mode}}</button>
     <form-directive resource="plant" type="new"></form-directive>
 
   </section>
@@ -32,16 +31,14 @@
     <h1>Supplements</h1>
 
     <ul>
-      <list-directive ng-show="mode === 'list'" resource="supplement" type="edit"></list-directive>
+      <list-directive ng-repeat="supplement in rc.supplements" ng-show="mode === 'list'" resource="supplement" supplement="supplement" type="edit" ng-click="rc.toggleItem()"></list-directive>
     </ul>
 
-    <ul>
-      <li ng-repeat="supplement in rc.supplements">
-        <item-directive ng-show="mode === 'item'" resource="supplement">
-        </item-directive>
-        <form-directive resource="supplement" type="edit"></form-directive>
-      </li>
-    </ul>
+    <div ng-show="mode === 'item'">
+      <item-directive resource="supplement" ng-click="rc.toggleItem()">
+      </item-directive>
+      <form-directive resource="supplement" type="edit"></form-directive>
+    </div>
 
 
     <form-directive resource="supplement" type="new"></form-directive>
