@@ -11,6 +11,7 @@ function ResourceController($http) {
   this.mode = 'list';
   this.editing = false;
   this.currentresource;
+  this.updated;
 
   this.toggleItem = function(resource) {
     console.log(resource);
@@ -33,14 +34,15 @@ function ResourceController($http) {
   };
 
   this.addPlant = function() {
-    $http.post('http://localhost:3000/plants', this.newPlant)
+    this.updated.zone = parseInt(this.updated.zone);
+    $http.post('http://localhost:3000/plants', this.updated)
     .then((res) => {
       let medicinalUsesArray = res.data.medicinalUses[0].split(',') || res.data.medicinalUses[0];
       res.data.medicinalUses = medicinalUsesArray;
       let nutritionalValueArray = res.data.nutritionalValue[0].split(',') || res.data.nutritionalValue[0];
       res.data.nutritionalValue = nutritionalValueArray;
       this.plants.push(res.data);
-      this.newPlant = null;
+      this.updated = null;
     }, (err) => {
       console.log(err);
     }).bind(this);
@@ -60,7 +62,7 @@ function ResourceController($http) {
     if (updated.scientificName) plant.scientificName = updated.scientificName;
     if (updated.medicinalUses) plant.medicinalUses = updated.medicinalUses.split(',') || updated.medicinalUses;
     if (updated.nutritionalValue) plant.nutritionalValue = updated.nutritionalValue.split(',') || updated.nutritionalValue;
-    if (updated.zone) plant.zone = updated.zone;
+    if (updated.zone) plant.zone = parseInt(updated.zone);
     $http.put('http://localhost:3000/plants', plant)
       .then(() => {
         this.plants = this.plants.map(p => {
