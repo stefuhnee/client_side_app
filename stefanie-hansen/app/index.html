@@ -13,11 +13,11 @@
     <h1>Plants</h1>
 
     <ul>
-      <list-directive ng-repeat="plant in rc.plants" ng-show="mode === 'list'" resource="plant" plant="plant" type="edit" ng-click="rc.toggleItem()"></list-directive>
+      <list-directive ng-repeat="plant in rc.plants" ng-show="rc.mode === 'list'" resource="plant" plant="plant" type="edit" ng-click="rc.toggleItem()"></list-directive>
     </ul>
 
 
-    <div ng-show="mode === 'item'">
+    <div ng-show="rc.mode === 'item'">
       <item-directive resource="plant" ng-click="rc.toggleItem()">
       </item-directive>
       <form-directive resource="plant" type="edit"></form-directive>
@@ -31,10 +31,10 @@
     <h1>Supplements</h1>
 
     <ul>
-      <list-directive ng-repeat="supplement in rc.supplements" ng-show="mode === 'list'" resource="supplement" supplement="supplement" type="edit" ng-click="rc.toggleItem()"></list-directive>
+      <list-directive ng-repeat="supplement in rc.supplements" ng-show="rc.mode === 'list'" resource="supplement" supplement="supplement" type="edit" ng-click="rc.toggleItem()"></list-directive>
     </ul>
 
-    <div ng-show="mode === 'item'">
+    <div ng-show="rc.mode === 'item'">
       <item-directive resource="supplement" ng-click="rc.toggleItem()">
       </item-directive>
       <form-directive resource="supplement" type="edit"></form-directive>

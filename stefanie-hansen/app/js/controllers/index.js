@@ -1,26 +1,24 @@
 'use strict';
 
 module.exports = function(app) {
-  app.controller('ResourceController', ['$http', '$scope', ResourceController]);
+  app.controller('ResourceController', ['$http', ResourceController]);
 };
 
-function ResourceController($http, $scope) {
+function ResourceController($http) {
   this.supplements = [];
   this.plants = [];
   this.$http = $http;
-  this.$scope = $scope;
+  this.mode = 'list';
 
-  this.toggleItem = function($scope) {
+  this.toggleItem = function() {
     console.log('toggling');
-    console.log('scope', $scope);
-    $scope.mode === 'list' ? $scope.mode === 'item' : $scope.mode === 'list';
+    console.log('this.mode', this.mode);
+    this.mode === 'list' ? this.mode = 'item' : this.mode = 'list';
   };
 
-  this.init = function($scope) {
+  this.init = function() {
     this.getSupplements();
     this.getPlants();
-    $scope.mode = 'list';
-    console.log($scope);
   };
 
   this.getPlants = function() {
