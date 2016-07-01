@@ -30,9 +30,9 @@
   <section>
     <h1>Supplements</h1>
 
-    <ul>
-      <list-directive ng-repeat="supplement in rc.supplements" ng-show="rc.mode === 'list'" resource="supplement" supplement="supplement" type="edit"></list-directive>
-    </ul>
+    <div ng-repeat="supplement in rc.supplements" ng-show="rc.mode === 'list'">
+      <list-directive resource="supplement" supplement="supplement" type="edit" ng-click="rc.toggleItem(supplement)"></list-directive>
+    </div>
 
     <div ng-show="rc.mode === 'item'">
       <item-directive supplement="supplement" ng-click="toggleItem()" currentresource="rc.currentresource">

@@ -90,7 +90,7 @@ function ResourceController($http) {
   }.bind(this);
 
   this.addSupplement = function() {
-    $http.post('http://localhost:3000/supplements', this.newSupplement)
+    $http.post('http://localhost:3000/supplements', this.updated)
     .then((res) => {
       console.log(res);
       let medicinalEffectsArray = res.data.medicinalEffects[0].split(',') || res.data.medicinalEffects[0];
