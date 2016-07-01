@@ -14,7 +14,6 @@ function ResourceController($http) {
   this.updated = {};
 
   this.toggleItem = function(resource) {
-    console.log(resource);
     if (resource) this.currentresource = resource;
     this.mode === 'list' ? this.mode = 'item' : this.mode = 'list';
   }.bind(this);
@@ -43,11 +42,10 @@ function ResourceController($http) {
       let nutritionalValueArray = res.data.nutritionalValue[0].split(',') || res.data.nutritionalValue[0];
       res.data.nutritionalValue = nutritionalValueArray;
       this.plants.push(res.data);
-      this.updated = null;
+      this.updated = {};
     }, (err) => {
       console.log(err);
     });
-    this.updated = {};
   }.bind(this);
 
   this.deletePlant = function(plant) {
@@ -61,9 +59,6 @@ function ResourceController($http) {
   }.bind(this);
 
   this.updatePlant = function(updated) {
-    console.log('updating');
-    console.log('plant', this.currentresource);
-    console.log('updated values', updated);
     if (updated.commonName) this.currentresource.commonName = updated.commonName;
     if (updated.scientificName) this.currentresource.scientificName = updated.scientificName;
     if (updated.medicinalUses) this.currentresource.medicinalUses = updated.medicinalUses.split(',') || updated.medicinalUses;
@@ -77,6 +72,7 @@ function ResourceController($http) {
       }, (err) => {
         console.log(err);
       });
+    this.updated = {};
   }.bind(this);
 
   this.getSupplements = function() {
@@ -97,10 +93,11 @@ function ResourceController($http) {
       let sideEffectsArray = res.data.sideEffects[0].split(',') || res.data.sideEffects[0];
       res.data.sideEffects = sideEffectsArray;
       this.supplements.push(res.data);
-      this.newSupplement = null;
+      this.updated = {};
     }, (err) => {
       console.log(err);
     });
+    this.updated = {};
   }.bind(this);
 
   this.deleteSupplement = function(supplement) {
@@ -121,6 +118,7 @@ function ResourceController($http) {
         this.supplements = this.supplements.map(s => {
           return s._id === this.currentresource._id ? this.currentresource : s;
         });
+        this.updated = {};
       }, (err) => {
         console.log(err);
       });

@@ -9,13 +9,13 @@ const itemTemplate = require('../app/templates/item.html');
 const listTemplate = require('../app/templates/list.html');
 
 describe('plants controller tests', () => {
-  let plantsctrl;
+  let rctrl;
   let $httpBackend;
 
   beforeEach(() => {
     angular.mock.module('HealthApp');
     angular.mock.inject(function($controller, _$httpBackend_){
-      plantsctrl = new $controller('PlantsController');
+      rctrl = new $controller('ResourceController');
       $httpBackend = _$httpBackend_;
     });
   });
@@ -25,31 +25,53 @@ describe('plants controller tests', () => {
     $httpBackend.verifyNoOutstandingRequest();
   });
 
-  it('should have a plants array', () => {
-    expect(Array.isArray(plantsctrl.plants)).toBe(true);
+  it('should have a resouces arrays', () => {
+    expect(Array.isArray(rctrl.plants)).toBe(true);
+    expect(Array.isArray(rctrl.supplements)).toBe(true);
   });
 
   it('should get a list of plants', () => {
     $httpBackend.expectGET('http://localhost:3000/plants')
       .respond(200, {commonName: 'test', scientificName: 'test', medicinalUses: ['test'], nutritionalValue: ['test'], zone: 0});
 
-    plantsctrl.getPlants();
+    rctrl.getPlants();
     $httpBackend.flush();
-    expect(plantsctrl.plants.commonName).toBe('test');
-    expect(plantsctrl.plants.scientificName).toBe('test');
-    expect(plantsctrl.plants.medicinalUses[0]).toBe('test');
-    expect(plantsctrl.plants.nutritionalValue[0]).toBe('test');
-    expect(plantsctrl.plants.zone).toBe(0);
+    expect(rctrl.plants.commonName).toBe('test');
+    expect(rctrl.plants.scientificName).toBe('test');
+    expect(rctrl.plants.medicinalUses[0]).toBe('test');
+    expect(rctrl.plants.nutritionalValue[0]).toBe('test');
+    expect(rctrl.plants.zone).toBe(0);
+  });
+
+  it('should get a list of supplements', () => {
+    $httpBackend.expectGET('http://localhost:3000/supplements')
+      .respond(200, {name: 'test', medicinalEffects: ['test'], sideEffects: ['test']});
+
+    rctrl.getSupplements();
+    $httpBackend.flush();
+    expect(rctrl.supplements.name).toBe('test');
+    expect(rctrl.supplements.medicinalEffects[0]).toBe('test');
+    expect(rctrl.supplements.sideEffects[0]).toBe('test');
   });
 
   it('should add a plant', () => {
     $httpBackend.expectPOST('http://localhost:3000/plants')
       .respond(200, {commonName: 'test', scientificName: 'test', medicinalUses: ['test'], nutritionalValue: ['test'], zone: 0});
 
-    plantsctrl.newPlant = {commonName: 'test', scientificName: 'test', medicinalUses: ['test'], nutritionalValue: ['test'], zone: 0};
-    plantsctrl.addPlant();
+    rctrl.updated = {commonName: 'test', scientificName: 'test', medicinalUses: ['test'], nutritionalValue: ['test'], zone: 0};
+    rctrl.addPlant();
     $httpBackend.flush();
-    expect(plantsctrl.newPlant).toBe(null);
+    expect(rctrl.updated).toBe({});
+  });
+
+  it('should add a supplement', () => {
+    $httpBackend.expectPOST('http://localhost:3000/supplements')
+      .respond(200, {name: 'test', medicinalEffects: ['test'], sideEffects: ['test']});
+
+    rctrl.updated = {name: 'test', medicinalEffects: ['test'], sideEffects: ['test']};
+    rctrl.addSupplement();
+    $httpBackend.flush();
+    expect(rctrl.updated).toBe({});
   });
 
   it('should delete a plant', () => {
@@ -57,10 +79,21 @@ describe('plants controller tests', () => {
     $httpBackend.expectDELETE('http://localhost:3000/plants/1')
       .respond(200, {message: 'deleted'});
 
-    plantsctrl.plants.push(testPlant);
-    plantsctrl.deletePlant(testPlant);
+    rctrl.plants.push(testPlant);
+    rctrl.deletePlant(testPlant);
     $httpBackend.flush();
-    expect(plantsctrl.plants.length).toBe(0);
+    expect(rctrl.plants.length).toBe(0);
+  });
+
+  it('should delete a supplement', () => {
+    let testSupplement = {_id: 1, name: 'test', medicinalEffects: ['test'], sideEffects: ['test']};
+    $httpBackend.expectDELETE('http://localhost:3000/supplements/1')
+      .respond(200, {message: 'deleted'});
+
+    rctrl.supplements.push(testSupplement);
+    rctrl.deleteSupplement(testSupplement);
+    $httpBackend.flush();
+    expect(rctrl.supplements.length).toBe(0);
   });
 
   it('should update a plant', () => {
@@ -69,69 +102,16 @@ describe('plants controller tests', () => {
     $httpBackend.expectPUT('http://localhost:3000/plants')
       .respond(200, {message: 'updated'});
 
-    plantsctrl.plants.push(testPlant);
-    plantsctrl.updatePlant(testPlant, updatedPlant);
+    rctrl.currentresource = testPlant;
+    rctrl.plants.push(testPlant);
+    rctrl.updatePlant(updatedPlant);
     $httpBackend.flush();
-    expect(plantsctrl.plants.length).toBe(1);
-    expect(plantsctrl.plants[0].commonName).toBe('test2');
-    expect(plantsctrl.plants[0].scientificName).toBe('test');
-    expect(plantsctrl.plants[0].medicinalUses[0]).toBe('test');
-    expect(plantsctrl.plants[0].nutritionalValue[0]).toBe('test');
-    expect(plantsctrl.plants[0].zone).toBe(2);
-  });
-});
-
-describe('supplement controller tests', () => {
-  let supplementsctrl;
-  let $httpBackend;
-
-  beforeEach(() => {
-    angular.mock.module('HealthApp');
-    angular.mock.inject(function($controller, _$httpBackend_){
-      supplementsctrl = new $controller('SupplementsController');
-      $httpBackend = _$httpBackend_;
-    });
-  });
-
-  afterEach(() => {
-    $httpBackend.verifyNoOutstandingExpectation();
-    $httpBackend.verifyNoOutstandingRequest();
-  });
-
-  it('should have a supplements array', () => {
-    expect(Array.isArray(supplementsctrl.supplements)).toBe(true);
-  });
-
-  it('should get a list of supplements', () => {
-    $httpBackend.expectGET('http://localhost:3000/supplements')
-      .respond(200, {name: 'test', medicinalEffects: ['test'], sideEffects: ['test']});
-
-    supplementsctrl.getSupplements();
-    $httpBackend.flush();
-    expect(supplementsctrl.supplements.name).toBe('test');
-    expect(supplementsctrl.supplements.medicinalEffects[0]).toBe('test');
-    expect(supplementsctrl.supplements.sideEffects[0]).toBe('test');
-  });
-
-  it('should add a supplement', () => {
-    $httpBackend.expectPOST('http://localhost:3000/supplements')
-      .respond(200, {name: 'test', medicinalEffects: ['test'], sideEffects: ['test']});
-
-    supplementsctrl.newSupplement = {name: 'test', medicinalEffects: ['test'], sideEffects: ['test']};
-    supplementsctrl.addSupplement();
-    $httpBackend.flush();
-    expect(supplementsctrl.newSupplement).toBe(null);
-  });
-
-  it('should delete a supplement', () => {
-    let testSupplement = {_id: 1, name: 'test', medicinalEffects: ['test'], sideEffects: ['test']};
-    $httpBackend.expectDELETE('http://localhost:3000/supplements/1')
-      .respond(200, {message: 'deleted'});
-
-    supplementsctrl.supplements.push(testSupplement);
-    supplementsctrl.deleteSupplement(testSupplement);
-    $httpBackend.flush();
-    expect(supplementsctrl.supplements.length).toBe(0);
+    expect(rctrl.plants.length).toBe(1);
+    expect(rctrl.plants[0].commonName).toBe('test2');
+    expect(rctrl.plants[0].scientificName).toBe('test');
+    expect(rctrl.plants[0].medicinalUses[0]).toBe('test');
+    expect(rctrl.plants[0].nutritionalValue[0]).toBe('test');
+    expect(rctrl.plants[0].zone).toBe(2);
   });
 
   it('should update a supplement', () => {
@@ -140,13 +120,14 @@ describe('supplement controller tests', () => {
     $httpBackend.expectPUT('http://localhost:3000/supplements')
       .respond(200, {message: 'updated'});
 
-    supplementsctrl.supplements.push(testSupplement);
-    supplementsctrl.updateSupplement(testSupplement, updatedSupplement);
+    rctrl.currentresource = testSupplement;
+    rctrl.supplements.push(testSupplement);
+    rctrl.updateSupplement(updatedSupplement);
     $httpBackend.flush();
-    expect(supplementsctrl.supplements.length).toBe(1);
-    expect(supplementsctrl.supplements[0].name).toBe('test2');
-    expect(supplementsctrl.supplements[0].medicinalEffects[0]).toBe('test2');
-    expect(supplementsctrl.supplements[0].sideEffects[0]).toBe('test');
+    expect(rctrl.supplements.length).toBe(1);
+    expect(rctrl.supplements[0].name).toBe('test2');
+    expect(rctrl.supplements[0].medicinalEffects[0]).toBe('test2');
+    expect(rctrl.supplements[0].sideEffects[0]).toBe('test');
   });
 });
 
@@ -171,5 +152,13 @@ describe('directive tests', () => {
       .respond(200, formTemplate);
     $httpBackend.expectGET('./templates/item.html')
       .respond(200, itemTemplate);
+
+    $scope.data = [{commonName: 'test'}];
+    let link = $compile('<list-directive ng-repeat="datum in data"></list-directive>');
+    let directive = link($scope);
+    $scope.$digest();
+    $httpBackend.flush();
+
+    console.log(directive);
   });
 });

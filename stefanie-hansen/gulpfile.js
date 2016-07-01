@@ -82,8 +82,16 @@ gulp.task('copy', ['clean'],() => {
 
 gulp.task('bundle:test', () => {
   return gulp.src(paths.tests)
-    .pipe(webpack({output:{filename: 'test-bundle.js'}}))
-    .pipe(gulp.dest('./test'));
+    .pipe(webpack({
+      output: {
+        filename: 'test-bundle.js'
+      }, module: {
+        loaders: [{
+          test: /\.html$/,
+          loader: 'html'
+        }]
+      }
+    })).pipe(gulp.dest('./test'));
 });
 
 gulp.task('default', ['linter', 'bundle', 'clean', 'copy'], () => {
