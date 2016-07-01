@@ -77,7 +77,6 @@ function ResourceController($http) {
       }, (err) => {
         console.log(err);
       });
-    this.updated = {};
   }.bind(this);
 
   this.getSupplements = function() {
