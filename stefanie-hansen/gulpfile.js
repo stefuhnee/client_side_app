@@ -47,6 +47,7 @@ const opts = {
 const paths = {
   html: './app/**/*.html',
   js: './app/js/client.js',
+  css: './app/css/style.css',
   tests: './test/*_test.js'
 };
 
@@ -73,7 +74,9 @@ gulp.task('clean', () => {
 });
 
 gulp.task('copy', ['clean'],() => {
-  return gulp.src(paths.html)
+  gulp.src(paths.html)
+    .pipe(gulp.dest('./build'));
+  gulp.src(paths.css)
     .pipe(gulp.dest('./build'));
 });
 

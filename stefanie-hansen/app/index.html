@@ -13,8 +13,8 @@
   <section>
     <h1>Plants</h1>
 
-    <div ng-repeat="plant in rc.plants" ng-show="rc.mode === 'list'"  class="resource-list">
-      <list-directive resource="plant" plant="plant" type="edit" ng-click="rc.toggleItem(plant)"></list-directive>
+    <div class="resource-list">
+      <list-directive resource="plant" plant="plant" type="edit" ng-click="rc.toggleItem(plant)" ng-repeat="plant in rc.plants" ng-show="rc.mode === 'list'"></list-directive>
     </div>
 
 
@@ -33,8 +33,8 @@
   <section>
     <h1>Supplements</h1>
 
-    <div ng-repeat="supplement in rc.supplements" ng-show="rc.mode === 'list'"  class="resource-list">
-      <list-directive resource="supplement" supplement="supplement" type="edit" ng-click="rc.toggleItem(supplement)"></list-directive>
+    <div class="resource-list">
+      <list-directive resource="supplement" supplement="supplement" type="edit" ng-click="rc.toggleItem(supplement)" ng-repeat="supplement in rc.supplements" ng-show="rc.mode === 'list'"></list-directive>
     </div>
 
     <div ng-show="rc.mode === 'item'" class="resource-list">
