@@ -61,7 +61,7 @@ describe('plants controller tests', () => {
     rctrl.updated = {commonName: 'test', scientificName: 'test', medicinalUses: ['test'], nutritionalValue: ['test'], zone: 0};
     rctrl.addPlant();
     $httpBackend.flush();
-    expect(rctrl.updated).toBe({});
+    expect(rctrl.updated).toEqual({});
   });
 
   it('should add a supplement', () => {
@@ -71,7 +71,7 @@ describe('plants controller tests', () => {
     rctrl.updated = {name: 'test', medicinalEffects: ['test'], sideEffects: ['test']};
     rctrl.addSupplement();
     $httpBackend.flush();
-    expect(rctrl.updated).toBe({});
+    expect(rctrl.updated).toEqual({});
   });
 
   it('should delete a plant', () => {
@@ -145,7 +145,7 @@ describe('directive tests', () => {
     });
   });
 
-  it('should have a list of each resource', () => {
+  it('should have list the common name of resources', () => {
     $httpBackend.expectGET('./templates/list.html')
       .respond(200, listTemplate);
     $httpBackend.expectGET('./templates/form.html')

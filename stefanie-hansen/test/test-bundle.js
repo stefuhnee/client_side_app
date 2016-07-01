@@ -107,7 +107,7 @@
 	    rctrl.updated = {commonName: 'test', scientificName: 'test', medicinalUses: ['test'], nutritionalValue: ['test'], zone: 0};
 	    rctrl.addPlant();
 	    $httpBackend.flush();
-	    expect(rctrl.updated).toBe({});
+	    expect(rctrl.updated).toEqual({});
 	  });
 
 	  it('should add a supplement', () => {
@@ -117,7 +117,7 @@
 	    rctrl.updated = {name: 'test', medicinalEffects: ['test'], sideEffects: ['test']};
 	    rctrl.addSupplement();
 	    $httpBackend.flush();
-	    expect(rctrl.updated).toBe({});
+	    expect(rctrl.updated).toEqual({});
 	  });
 
 	  it('should delete a plant', () => {
@@ -191,7 +191,7 @@
 	    });
 	  });
 
-	  it('should have a list of each resource', () => {
+	  it('should have list the common name of resources', () => {
 	    $httpBackend.expectGET('./templates/list.html')
 	      .respond(200, listTemplate);
 	    $httpBackend.expectGET('./templates/form.html')
@@ -200,8 +200,8 @@
 	      .respond(200, itemTemplate);
 
 	    $scope.data = [{commonName: 'test'}];
-	    let link = $compile('<list-directive ng-repeat="datum in data"></list-directive>');
-	    let directive = link($scope);
+	    let element = $compile('<body><list-directive ng-repeat="datum in data"></list-directive></body>')($scope);
+	    let directive = element.find('list-directive').scope();
 	    $scope.$digest();
 	    $httpBackend.flush();
 
