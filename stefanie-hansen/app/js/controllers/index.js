@@ -11,7 +11,7 @@ function ResourceController($http) {
   this.mode = 'list';
   this.editing = false;
   this.currentresource;
-  this.updated;
+  this.updated = {};
 
   this.toggleItem = function(resource) {
     console.log(resource);
@@ -47,6 +47,7 @@ function ResourceController($http) {
     }, (err) => {
       console.log(err);
     });
+    this.updated = {};
   }.bind(this);
 
   this.deletePlant = function(plant) {
@@ -59,21 +60,24 @@ function ResourceController($http) {
     });
   }.bind(this);
 
-  this.updatePlant = function(plant, updated) {
+  this.updatePlant = function(updated) {
     console.log('updating');
-    if (updated.commonName) plant.commonName = updated.commonName;
-    if (updated.scientificName) plant.scientificName = updated.scientificName;
-    if (updated.medicinalUses) plant.medicinalUses = updated.medicinalUses.split(',') || updated.medicinalUses;
-    if (updated.nutritionalValue) plant.nutritionalValue = updated.nutritionalValue.split(',') || updated.nutritionalValue;
-    if (updated.zone) plant.zone = parseInt(updated.zone);
-    $http.put('http://localhost:3000/plants', plant)
+    console.log('plant', this.currentresource);
+    console.log('updated values', updated);
+    if (updated.commonName) this.currentresource.commonName = updated.commonName;
+    if (updated.scientificName) this.currentresource.scientificName = updated.scientificName;
+    if (updated.medicinalUses) this.currentresource.medicinalUses = updated.medicinalUses.split(',') || updated.medicinalUses;
+    if (updated.nutritionalValue) this.currentresource.nutritionalValue = updated.nutritionalValue.split(',') || updated.nutritionalValue;
+    if (updated.zone) this.currentresource.zone = parseInt(updated.zone);
+    $http.put('http://localhost:3000/plants', this.currentresource)
       .then(() => {
         this.plants = this.plants.map(p => {
-          return p._id === plant._id ? plant : p;
+          return p._id === this.currentresource._id ? this.currentresource : p;
         });
       }, (err) => {
         console.log(err);
       });
+    this.updated = {};
   }.bind(this);
 
   this.getSupplements = function() {
@@ -109,14 +113,14 @@ function ResourceController($http) {
     });
   }.bind(this);
 
-  this.updateSupplement = function(supplement, updated) {
-    if (updated.name) supplement.name = updated.name;
-    if (updated.medicinalEffects) supplement.medicinalEffects = updated.medicinalEffects.split(',') || updated.medicinalEffects;
-    if (updated.sideEffects) supplement.sideEffects = updated.sideEffects.split(',') || updated.sideEffects;
-    $http.put('http://localhost:3000/supplements', supplement)
+  this.updateSupplement = function(updated) {
+    if (updated.name) this.currentresource.name = updated.name;
+    if (updated.medicinalEffects) this.currentresource.medicinalEffects = updated.medicinalEffects.split(',') || updated.medicinalEffects;
+    if (updated.sideEffects) this.currentresource.sideEffects = updated.sideEffects.split(',') || updated.sideEffects;
+    $http.put('http://localhost:3000/supplements', this.currentresource)
       .then(() => {
         this.supplements = this.supplements.map(s => {
-          return s._id === supplement._id ? supplement : s;
+          return s._id === this.currentresource._id ? this.currentresource : s;
         });
       }, (err) => {
         console.log(err);

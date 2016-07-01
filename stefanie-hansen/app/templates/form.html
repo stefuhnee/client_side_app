@@ -1,4 +1,4 @@
-<form ng-submit="submit(updated)" ng-init="updated = {}">
+<form ng-submit="submit(updated)">
   <h1>{{formMessage}}</h1>
   <ul>
     <li ng-repeat="property in resourceProps">
@@ -7,6 +7,6 @@
   </ul>
 
 <!-- need to route update/add depending on what's clicked -->
-  <button type="submit" ng-click="update(currentresource, updated)">{{type | uppercase}} {{resource | uppercase}}</button>
+  <button type="submit" ng-click="update(updated)">{{type | uppercase}} {{resource | uppercase}}</button>
   <button type="submit" ng-show="type === 'edit'" ng-click="delete(currentresource)">DELETE {{resource | uppercase}}</button>
 </form>
