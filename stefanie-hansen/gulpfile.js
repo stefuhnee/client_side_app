@@ -48,7 +48,7 @@ const paths = {
   html: './app/**/*.html',
   js: './app/js/client.js',
   css: './app/css/style.css',
-  tests: './test/*_test.js'
+  tests: './test/front-end-test.js'
 };
 
 gulp.task('linter', () => {
@@ -82,7 +82,7 @@ gulp.task('copy', ['clean'],() => {
 
 gulp.task('bundle:test', () => {
   return gulp.src(paths.tests)
-    .pipe(webpack({output:{filename: 'test_bundle.js'}}))
+    .pipe(webpack({output:{filename: 'test-bundle.js'}}))
     .pipe(gulp.dest('./test'));
 });
 

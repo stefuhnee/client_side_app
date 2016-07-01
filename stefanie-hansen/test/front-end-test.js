@@ -4,6 +4,10 @@ const angular = require('angular');
 require('angular-mocks');
 require('../app/js/client.js');
 
+const formTemplate = require('../app/templates/form.html');
+const itemTemplate = require('../app/templates/item.html');
+const listTemplate = require('../app/templates/list.html');
+
 describe('plants controller tests', () => {
   let plantsctrl;
   let $httpBackend;
@@ -143,5 +147,29 @@ describe('supplement controller tests', () => {
     expect(supplementsctrl.supplements[0].name).toBe('test2');
     expect(supplementsctrl.supplements[0].medicinalEffects[0]).toBe('test2');
     expect(supplementsctrl.supplements[0].sideEffects[0]).toBe('test');
+  });
+});
+
+describe('directive tests', () => {
+  let $httpBackend;
+  let $scope;
+  let $compile;
+
+  beforeEach(() => {
+    angular.mock.module('HealthApp');
+    angular.mock.inject(function(_$httpBackend_, $rootScope, _$compile_) {
+      $scope = $rootScope.$new();
+      $compile = _$compile_;
+      $httpBackend = _$httpBackend_;
+    });
+  });
+
+  it('should have a list of each resource', () => {
+    $httpBackend.expectGET('./templates/list.html')
+      .respond(200, listTemplate);
+    $httpBackend.expectGET('./templates/form.html')
+      .respond(200, formTemplate);
+    $httpBackend.expectGET('./templates/item.html')
+      .respond(200, itemTemplate);
   });
 });
