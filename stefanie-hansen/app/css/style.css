@@ -1,5 +1,12 @@
 body {
   text-align: center;
+  font-family: Helvetica;
+}
+
+h1 {
+  color: white;
+  margin: 0 auto;
+  background-color: salmon;
 }
 
 .resource-list {
