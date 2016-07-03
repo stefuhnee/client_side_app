@@ -33,7 +33,6 @@ function ResourceController($http) {
   };
 
   this.addPlant = function() {
-    console.log('adding');
     this.updated.zone = parseInt(this.updated.zone);
     $http.post('http://localhost:3000/plants', this.updated)
     .then((res) => {
@@ -49,7 +48,6 @@ function ResourceController($http) {
   }.bind(this);
 
   this.deletePlant = function(plant) {
-    console.log('deleteing');
     $http.delete(`http://localhost:3000/plants/${plant._id}`)
     .then(() => {
       this.plants.splice(this.plants.indexOf(plant), 1);
@@ -87,7 +85,6 @@ function ResourceController($http) {
   this.addSupplement = function() {
     $http.post('http://localhost:3000/supplements', this.updated)
     .then((res) => {
-      console.log(res);
       let medicinalEffectsArray = res.data.medicinalEffects[0].split(',') || res.data.medicinalEffects[0];
       res.data.medicinalEffects = medicinalEffectsArray;
       let sideEffectsArray = res.data.sideEffects[0].split(',') || res.data.sideEffects[0];

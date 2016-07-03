@@ -194,14 +194,14 @@
 	  it('should have list the common name of resources', () => {
 	    $httpBackend.expectGET('./templates/list.html')
 	      .respond(200, listTemplate);
-	    $httpBackend.expectGET('./templates/form.html')
-	      .respond(200, formTemplate);
-	    $httpBackend.expectGET('./templates/item.html')
-	      .respond(200, itemTemplate);
+	    // $httpBackend.expectGET('./templates/form.html')
+	    //   .respond(200, formTemplate);
+	    // $httpBackend.expectGET('./templates/item.html')
+	    //   .respond(200, itemTemplate);
 
 	    $scope.data = [{commonName: 'test'}];
-	    let element = $compile('<body><list-directive ng-repeat="datum in data"></list-directive></body>')($scope);
-	    let directive = element.find('list-directive').scope();
+	    let link = $compile('<body ng-controller="ResourceController as rc"><list-directive ng-repeat="datum in data"></list-directive></body>');
+	    let directive = link($scope);
 	    $scope.$digest();
 	    $httpBackend.flush();
 
@@ -35047,7 +35047,7 @@
 /* 9 */
 /***/ function(module, exports) {
 
-	'use strict';
+	
 
 	module.exports = function(app) {
 	  app.directive('listDirective', function() {
