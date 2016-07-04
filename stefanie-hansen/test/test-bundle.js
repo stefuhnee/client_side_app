@@ -194,13 +194,14 @@
 	  it('should have list the common name of resources', () => {
 	    $httpBackend.expectGET('./templates/list.html')
 	      .respond(200, listTemplate);
-	    // $httpBackend.expectGET('./templates/form.html')
-	    //   .respond(200, formTemplate);
-	    // $httpBackend.expectGET('./templates/item.html')
-	    //   .respond(200, itemTemplate);
+	    $httpBackend.expectGET('./templates/form.html')
+	      .respond(200, formTemplate);
+	    $httpBackend.expectGET('./templates/item.html')
+	      .respond(200, itemTemplate);
 
 	    $scope.data = [{commonName: 'test'}];
-	    let link = $compile('<body ng-controller="ResourceController as rc"><list-directive ng-repeat="datum in data"></list-directive></body>');
+	    let element = angular.element('<body ng-controller="ResourceController as rc"><list-directive ng-repeat="datum in data"></list-directive></body>');
+	    let link = $compile(element);
 	    let directive = link($scope);
 	    $scope.$digest();
 	    $httpBackend.flush();
@@ -34874,7 +34875,6 @@
 	  };
 
 	  this.addPlant = function() {
-	    console.log('adding');
 	    this.updated.zone = parseInt(this.updated.zone);
 	    $http.post('http://localhost:3000/plants', this.updated)
 	    .then((res) => {
@@ -34890,7 +34890,6 @@
 	  }.bind(this);
 
 	  this.deletePlant = function(plant) {
-	    console.log('deleteing');
 	    $http.delete(`http://localhost:3000/plants/${plant._id}`)
 	    .then(() => {
 	      this.plants.splice(this.plants.indexOf(plant), 1);
@@ -34928,7 +34927,6 @@
 	  this.addSupplement = function() {
 	    $http.post('http://localhost:3000/supplements', this.updated)
 	    .then((res) => {
-	      console.log(res);
 	      let medicinalEffectsArray = res.data.medicinalEffects[0].split(',') || res.data.medicinalEffects[0];
 	      res.data.medicinalEffects = medicinalEffectsArray;
 	      let sideEffectsArray = res.data.sideEffects[0].split(',') || res.data.sideEffects[0];
@@ -34996,7 +34994,7 @@
 	        currentresource: '='
 	      },
 	      templateUrl: './templates/form.html',
-	      require: '^ngController',
+	      require: '^^ngController',
 	      link: function($scope, elem, attr, controller) {
 	        let configMethods = {
 	          plant: function($scope) {
@@ -35037,7 +35035,7 @@
 	      link: function($scope, elem, attr, controller) {
 	        $scope.toggleItem = controller.toggleItem;
 	      },
-	      require: '^ngController'
+	      require: '^^ngController'
 	    };
 	  });
 	};

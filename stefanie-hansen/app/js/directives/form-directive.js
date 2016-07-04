@@ -10,7 +10,7 @@ module.exports = function(app) {
         currentresource: '='
       },
       templateUrl: './templates/form.html',
-      require: '^ngController',
+      require: '^^ngController',
       link: function($scope, elem, attr, controller) {
         let configMethods = {
           plant: function($scope) {
