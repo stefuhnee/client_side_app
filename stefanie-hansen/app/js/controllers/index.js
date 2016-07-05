@@ -4,7 +4,7 @@ module.exports = function(app) {
   app.controller('ResourceController', ['$http', 'ParseService', ResourceController]);
 };
 
-function ResourceController($http) {
+function ResourceController($http, ParseService) {
   this.supplements = [];
   this.plants = [];
   this.$http = $http;
@@ -36,12 +36,7 @@ function ResourceController($http) {
     this.updated.zone = parseInt(this.updated.zone);
     $http.post('http://localhost:3000/plants', this.updated)
     .then((res) => {
-      console.log(res.data);
-      let medicinalUsesArray = res.data.medicinalUses.split(',') || res.data.medicinalUses;
-      res.data.medicinalUses = medicinalUsesArray;
-      let nutritionalValueArray = res.data.nutritionalValue.split(',') || res.data.nutritionalValue;
-      res.data.nutritionalValue = nutritionalValueArray;
-      this.plants.push(res.data);
+      this.plants.push(ParseService.constructResource('plant',  res.data)(this.updated));
       this.updated = {};
     }, (err) => {
       console.log(err);
@@ -86,16 +81,11 @@ function ResourceController($http) {
   this.addSupplement = function() {
     $http.post('http://localhost:3000/supplements', this.updated)
     .then((res) => {
-      let medicinalEffectsArray = res.data.medicinalEffects.split(',') || res.data.medicinalEffects;
-      res.data.medicinalEffects = medicinalEffectsArray;
-      let sideEffectsArray = res.data.sideEffects.split(',') || res.data.sideEffects;
-      res.data.sideEffects = sideEffectsArray;
-      this.supplements.push(res.data);
+      this.supplements.push(ParseService.constructResource('supplement', res.data)(this.updated));
       this.updated = {};
     }, (err) => {
       console.log(err);
     });
-    this.updated = {};
   }.bind(this);
 
   this.deleteSupplement = function(supplement) {
