@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function(app) {
-  app.controller('ResourceController', ['$http', ResourceController]);
+  app.controller('ResourceController', ['$http', 'ParseService', ResourceController]);
 };
 
 function ResourceController($http) {
@@ -36,9 +36,10 @@ function ResourceController($http) {
     this.updated.zone = parseInt(this.updated.zone);
     $http.post('http://localhost:3000/plants', this.updated)
     .then((res) => {
-      let medicinalUsesArray = res.data.medicinalUses[0].split(',') || res.data.medicinalUses[0];
+      console.log(res.data);
+      let medicinalUsesArray = res.data.medicinalUses.split(',') || res.data.medicinalUses;
       res.data.medicinalUses = medicinalUsesArray;
-      let nutritionalValueArray = res.data.nutritionalValue[0].split(',') || res.data.nutritionalValue[0];
+      let nutritionalValueArray = res.data.nutritionalValue.split(',') || res.data.nutritionalValue;
       res.data.nutritionalValue = nutritionalValueArray;
       this.plants.push(res.data);
       this.updated = {};
@@ -85,9 +86,9 @@ function ResourceController($http) {
   this.addSupplement = function() {
     $http.post('http://localhost:3000/supplements', this.updated)
     .then((res) => {
-      let medicinalEffectsArray = res.data.medicinalEffects[0].split(',') || res.data.medicinalEffects[0];
+      let medicinalEffectsArray = res.data.medicinalEffects.split(',') || res.data.medicinalEffects;
       res.data.medicinalEffects = medicinalEffectsArray;
-      let sideEffectsArray = res.data.sideEffects[0].split(',') || res.data.sideEffects[0];
+      let sideEffectsArray = res.data.sideEffects.split(',') || res.data.sideEffects;
       res.data.sideEffects = sideEffectsArray;
       this.supplements.push(res.data);
       this.updated = {};
