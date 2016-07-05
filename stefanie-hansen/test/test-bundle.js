@@ -50,9 +50,9 @@
 	__webpack_require__(3);
 	__webpack_require__(4);
 
-	const formTemplate = __webpack_require__(10);
-	const itemTemplate = __webpack_require__(11);
-	const listTemplate = __webpack_require__(12);
+	const formTemplate = __webpack_require__(11);
+	const itemTemplate = __webpack_require__(12);
+	const listTemplate = __webpack_require__(13);
 
 	describe('plants controller tests', () => {
 	  let rctrl;
@@ -191,22 +191,41 @@
 	    });
 	  });
 
-	  it('should have list the common name of resources', () => {
-	    $httpBackend.expectGET('./templates/list.html')
-	      .respond(200, listTemplate);
-	    $httpBackend.expectGET('./templates/form.html')
-	      .respond(200, formTemplate);
-	    $httpBackend.expectGET('./templates/item.html')
-	      .respond(200, itemTemplate);
+	  // it('should have list the common name of resources', () => {
+	  //   $httpBackend.expectGET('./templates/list.html')
+	  //     .respond(200, listTemplate);
+	  //   $httpBackend.expectGET('./templates/form.html')
+	  //     .respond(200, formTemplate);
+	  //   $httpBackend.expectGET('./templates/item.html')
+	  //     .respond(200, itemTemplate);
+	  //
+	  //   $scope.data = [{commonName: 'test'}];
+	  //   let element = angular.element('<body ng-controller="ResourceController as rc"><list-directive ng-repeat="datum in data"></list-directive></body>');
+	  //   let link = $compile(element);
+	  //   let directive = link($scope);
+	  //   $scope.$digest();
+	  //   $httpBackend.flush();
+	  //
+	  //   console.log(directive);
+	  // });
+	});
 
-	    $scope.data = [{commonName: 'test'}];
-	    let element = angular.element('<body ng-controller="ResourceController as rc"><list-directive ng-repeat="datum in data"></list-directive></body>');
-	    let link = $compile(element);
-	    let directive = link($scope);
-	    $scope.$digest();
-	    $httpBackend.flush();
+	describe('Parse service tests', () => {
+	  let parseService;
+	  console.log('parse service', parseService);
 
-	    console.log(directive);
+	  beforeEach(() => {
+	    angular.mock.module('HealthApp');
+	    angular.mock.inject(function(ParseService) {
+	      parseService = ParseService;
+	    });
+	  });
+	  it('should have a method to add a resource', () => {
+	    expect(typeof parseService.constructResource).toBe('function');
+	  });
+
+	  it('should return an object with properties', () => {
+	    expect(typeof parseService.constructResource('plant', {})({}).toBe('object'));
 	  });
 	});
 
@@ -34834,6 +34853,7 @@
 
 	__webpack_require__(5)(app);
 	__webpack_require__(6)(app);
+	__webpack_require__(10)(app);
 
 
 /***/ },
@@ -34843,10 +34863,10 @@
 	'use strict';
 
 	module.exports = function(app) {
-	  app.controller('ResourceController', ['$http', ResourceController]);
+	  app.controller('ResourceController', ['$http', 'ParseService', ResourceController]);
 	};
 
-	function ResourceController($http) {
+	function ResourceController($http, ParseService) {
 	  this.supplements = [];
 	  this.plants = [];
 	  this.$http = $http;
@@ -34875,14 +34895,13 @@
 	  };
 
 	  this.addPlant = function() {
-	    this.updated.zone = parseInt(this.updated.zone);
 	    $http.post('http://localhost:3000/plants', this.updated)
 	    .then((res) => {
-	      let medicinalUsesArray = res.data.medicinalUses[0].split(',') || res.data.medicinalUses[0];
-	      res.data.medicinalUses = medicinalUsesArray;
-	      let nutritionalValueArray = res.data.nutritionalValue[0].split(',') || res.data.nutritionalValue[0];
-	      res.data.nutritionalValue = nutritionalValueArray;
-	      this.plants.push(res.data);
+	      console.log('res data for test',res.data);
+	      let newResource = ParseService.constructResource('plant',  res.data)(this.updated);
+	      newResource.zone = parseInt(this.updated.zone);
+	      console.log('new resource from controller', newResource);
+	      this.plants.push(newResource);
 	      this.updated = {};
 	    }, (err) => {
 	      console.log(err);
@@ -34927,16 +34946,11 @@
 	  this.addSupplement = function() {
 	    $http.post('http://localhost:3000/supplements', this.updated)
 	    .then((res) => {
-	      let medicinalEffectsArray = res.data.medicinalEffects[0].split(',') || res.data.medicinalEffects[0];
-	      res.data.medicinalEffects = medicinalEffectsArray;
-	      let sideEffectsArray = res.data.sideEffects[0].split(',') || res.data.sideEffects[0];
-	      res.data.sideEffects = sideEffectsArray;
-	      this.supplements.push(res.data);
+	      this.supplements.push(ParseService.constructResource('supplement', res.data)(this.updated));
 	      this.updated = {};
 	    }, (err) => {
 	      console.log(err);
 	    });
-	    this.updated = {};
 	  }.bind(this);
 
 	  this.deleteSupplement = function(supplement) {
@@ -35071,16 +35085,50 @@
 /* 10 */
 /***/ function(module, exports) {
 
-	module.exports = "<form ng-submit=\"submit(updated)\" class=\"resource-list\">\n  <h3>{{formMessage}}</h3>\n  <ul>\n    <li ng-repeat=\"property in resourceProps\">\n      <input type=\"text\" ng-model=\"updated[property]\" placeholder=\"{{property}}\">\n    </li>\n  </ul>\n\n<!-- need to route update/add depending on what's clicked -->\n  <button type=\"submit\" ng-click=\"update(updated)\">{{type | uppercase}} {{resource | uppercase}}</button>\n  <button type=\"submit\" ng-show=\"type === 'edit'\" ng-click=\"delete(currentresource)\">DELETE {{resource | uppercase}}</button>\n</form>\n";
+	'use strict';
+
+	module.exports = function(app) {
+	  app.factory('ParseService', function() {
+	    const service = {};
+	    service.plantProps = ['commonName', 'scientificName', 'medicinalUses', 'nutritionalValue'];
+	    service.supplementProps = ['name', 'medicinalEffects', 'sideEffects'];
+	    service.constructResource = function(resource, newResource) {
+	      return function(updated) {
+	        let resourceProperties = service[resource + 'Props'];
+	        console.log('resourceProperties', resourceProperties);
+	        console.log('updated', updated);
+	        console.log('resource', resource);
+	        console.log('newResource', newResource);
+	        for (let i = 0; i < resourceProperties.length; i++) {
+	          if (updated[resourceProperties[i]] && Array.isArray(updated[resourceProperties[i]])) {
+	            newResource[resourceProperties[i]] = updated[resourceProperties[i]].split(',') || updated[resourceProperties[i]];
+	          } else {
+	            newResource[resourceProperties[i]] = updated[resourceProperties[i]];
+	          }
+	        }
+	        console.log('new resource', newResource);
+	        return newResource;
+	      };
+	    };
+	    return service;
+	  });
+	};
+
 
 /***/ },
 /* 11 */
 /***/ function(module, exports) {
 
-	module.exports = "<div ng-if=\"plant\">\n  <ul>\n    <li><strong>{{currentresource.commonName}}</strong></li>\n    <li><em>{{currentresource.scientificName}}</em></li>\n    <li>Medicinal Uses: {{currentresource.medicinalUses}}</li>\n    <li>Nutritional Value: {{currentresource.nutritionalValue}}</li>\n    <li>Zone: {{currentresource.zone}}</li>\n  </ul>\n</div>\n\n<div ng-if=\"supplement\">\n  <ul>\n    <li><strong>{{currentresource.name}}</strong></li>\n    <li>Medicinal Effects: {{currentresource.medicinalEffects}}</li>\n    <li>Side Effects: {{currentresource.sideEffects}}</li>\n  </ul>\n</div>\n";
+	module.exports = "<form ng-submit=\"submit(updated)\" class=\"resource-list\">\n  <h3>{{formMessage}}</h3>\n  <ul>\n    <li ng-repeat=\"property in resourceProps\">\n      <input type=\"text\" ng-model=\"updated[property]\" placeholder=\"{{property}}\">\n    </li>\n  </ul>\n\n<!-- need to route update/add depending on what's clicked -->\n  <button type=\"submit\" ng-click=\"update(updated)\">{{type | uppercase}} {{resource | uppercase}}</button>\n  <button type=\"submit\" ng-show=\"type === 'edit'\" ng-click=\"delete(currentresource)\">DELETE {{resource | uppercase}}</button>\n</form>\n";
 
 /***/ },
 /* 12 */
+/***/ function(module, exports) {
+
+	module.exports = "<div ng-if=\"plant\">\n  <ul>\n    <li><strong>{{currentresource.commonName}}</strong></li>\n    <li><em>{{currentresource.scientificName}}</em></li>\n    <li>Medicinal Uses: {{currentresource.medicinalUses}}</li>\n    <li>Nutritional Value: {{currentresource.nutritionalValue}}</li>\n    <li>Zone: {{currentresource.zone}}</li>\n  </ul>\n</div>\n\n<div ng-if=\"supplement\">\n  <ul>\n    <li><strong>{{currentresource.name}}</strong></li>\n    <li>Medicinal Effects: {{currentresource.medicinalEffects}}</li>\n    <li>Side Effects: {{currentresource.sideEffects}}</li>\n  </ul>\n</div>\n";
+
+/***/ },
+/* 13 */
 /***/ function(module, exports) {
 
 	module.exports = "<p ng-show=\"resource.commonName\">\n  <p>{{resource.commonName}}</p>\n</p>\n\n<p ng-show=\"resource.name\">\n  <p>{{resource.name}}</p>\n</p>\n";

@@ -145,21 +145,40 @@ describe('directive tests', () => {
     });
   });
 
-  it('should have list the common name of resources', () => {
-    $httpBackend.expectGET('./templates/list.html')
-      .respond(200, listTemplate);
-    $httpBackend.expectGET('./templates/form.html')
-      .respond(200, formTemplate);
-    $httpBackend.expectGET('./templates/item.html')
-      .respond(200, itemTemplate);
+  // it('should have list the common name of resources', () => {
+  //   $httpBackend.expectGET('./templates/list.html')
+  //     .respond(200, listTemplate);
+  //   $httpBackend.expectGET('./templates/form.html')
+  //     .respond(200, formTemplate);
+  //   $httpBackend.expectGET('./templates/item.html')
+  //     .respond(200, itemTemplate);
+  //
+  //   $scope.data = [{commonName: 'test'}];
+  //   let element = angular.element('<body ng-controller="ResourceController as rc"><list-directive ng-repeat="datum in data"></list-directive></body>');
+  //   let link = $compile(element);
+  //   let directive = link($scope);
+  //   $scope.$digest();
+  //   $httpBackend.flush();
+  //
+  //   console.log(directive);
+  // });
+});
 
-    $scope.data = [{commonName: 'test'}];
-    let element = angular.element('<body ng-controller="ResourceController as rc"><list-directive ng-repeat="datum in data"></list-directive></body>');
-    let link = $compile(element);
-    let directive = link($scope);
-    $scope.$digest();
-    $httpBackend.flush();
+describe('Parse service tests', () => {
+  let parseService;
+  console.log('parse service', parseService);
 
-    console.log(directive);
+  beforeEach(() => {
+    angular.mock.module('HealthApp');
+    angular.mock.inject(function(ParseService) {
+      parseService = ParseService;
+    });
+  });
+  it('should have a method to add a resource', () => {
+    expect(typeof parseService.constructResource).toBe('function');
+  });
+
+  it('should return an object with properties', () => {
+    expect(typeof parseService.constructResource('plant', {})({}).toBe('object'));
   });
 });
