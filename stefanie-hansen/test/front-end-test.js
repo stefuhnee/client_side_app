@@ -154,7 +154,8 @@ describe('directive tests', () => {
       .respond(200, itemTemplate);
 
     $scope.data = [{commonName: 'test'}];
-    let element = angular.element('<body ng-controller="ResourceController as rc"><list-directive ng-repeat="datum in data"></list-directive></body>');
+    let element = angular.element('<list-directive ng-repeat="datum in data"></list-directive>');
+    element.data('$ngControllerController', {});
     let link = $compile(element);
     let directive = link($scope);
     $scope.$digest();
