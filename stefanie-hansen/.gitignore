@@ -3,6 +3,7 @@
 
 db/
 build/
+test/test-bundle.js
 
 ### Node ###
 # Logs
