@@ -14,8 +14,19 @@ describe('plants controller tests', () => {
 
   beforeEach(() => {
     angular.mock.module('HealthApp');
+    angular.mock.module({
+      'ParseService': {
+        constructResource: function(updated) {
+          for (let key in updated) {
+            Array.isArray(updated[key]) ? updated[key] = updated[key].split(',') : updated[key];
+          }
+          console.log('updated', updated);
+          return updated;
+        }
+      }
+    });
     angular.mock.inject(function($controller, _$httpBackend_){
-      rctrl = new $controller('ResourceController');
+      rctrl = $controller('ResourceController', {});
       $httpBackend = _$httpBackend_;
     });
   });
@@ -32,7 +43,7 @@ describe('plants controller tests', () => {
 
   it('should get a list of plants', () => {
     $httpBackend.expectGET('http://localhost:3000/plants')
-      .respond(200, {commonName: 'test', scientificName: 'test', medicinalUses: ['test'], nutritionalValue: ['test'], zone: 0});
+      .respond(200, {commonName: 'test', scientificName: 'test', medicinalUses: ['test', 'test2'], nutritionalValue: ['test', 'test2'], zone: 0});
 
     rctrl.getPlants();
     $httpBackend.flush();
@@ -61,7 +72,7 @@ describe('plants controller tests', () => {
     rctrl.updated = {commonName: 'test', scientificName: 'test', medicinalUses: ['test'], nutritionalValue: ['test'], zone: 0};
     rctrl.addPlant();
     $httpBackend.flush();
-    expect(rctrl.updated).toEqual({});
+    expect(rctrl.plants.length).toBe(1);
   });
 
   it('should add a supplement', () => {

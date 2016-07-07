@@ -5,8 +5,8 @@ module.exports = function(app) {
 };
 
 function ResourceController($http, ParseService) {
-  this.supplements = [];
-  this.plants = [];
+  this.supplements = ParseService.supplements;
+  this.plants = ParseService.plants;
   this.$http = $http;
   this.mode = 'list';
   this.editing = false;
@@ -19,42 +19,25 @@ function ResourceController($http, ParseService) {
   }.bind(this);
 
   this.init = function() {
-    this.getSupplements();
-    this.getPlants();
-  };
-
-  this.getPlants = function() {
-    $http.get('http://localhost:3000/plants')
-    .then((res) => {
-      this.plants = res.data;
-    }, (err) => {
-      console.log(err);
-    });
+    ParseService.update();
   };
 
   this.addPlant = function() {
-    console.log('this.updated from ctrl', this.updated);
     $http.post('http://localhost:3000/plants', this.updated)
-    .then((res) => {
-      console.log('res data for test',res.data);
-      let newResource = ParseService.constructResource(this.updated);
-      newResource.zone = parseInt(this.updated.zone);
-      console.log('new resource from controller', newResource);
-      this.plants.push(newResource);
-      this.updated = {};
-    }, (err) => {
+    .then(ParseService.constructResource), (err) => {
       console.log(err);
-    });
-  }.bind(this);
+    };
+  };
 
   this.deletePlant = function(plant) {
     $http.delete(`http://localhost:3000/plants/${plant._id}`)
     .then(() => {
-      this.plants.splice(this.plants.indexOf(plant), 1);
+      ParseService.plants.splice(ParseService.plants.indexOf(plant), 1);
+      ParseService.update();
     }, (err) => {
       console.log(err);
     });
-  }.bind(this);
+  };
 
   this.updatePlant = function(updated) {
     if (updated.commonName) this.currentresource.commonName = updated.commonName;
@@ -64,43 +47,37 @@ function ResourceController($http, ParseService) {
     if (updated.zone) this.currentresource.zone = parseInt(updated.zone);
     $http.put('http://localhost:3000/plants', this.currentresource)
       .then(() => {
-        this.plants = this.plants.map(p => {
+        ParseService.plants = ParseService.plants.map(p => {
           return p._id === this.currentresource._id ? this.currentresource : p;
         });
+        ParseService.update();
       }, (err) => {
         console.log(err);
       });
     this.updated = {};
   }.bind(this);
 
-  this.getSupplements = function() {
-    $http.get('http://localhost:3000/supplements')
-    .then((res) => {
-      this.supplements = res.data;
-    }, (err) => {
-      console.log(err);
-    });
-  }.bind(this);
-
   this.addSupplement = function() {
     $http.post('http://localhost:3000/supplements', this.updated)
-    .then(() => {
-      let newResource = ParseService.constructResource(this.updated);
-      this.supplements.push(newResource);
+    .then((res) => {
+      let newResource = ParseService.constructResource(res.data);
+      ParseService.supplements.push(newResource);
+      ParseService.update();
       this.updated = {};
     }, (err) => {
       console.log(err);
     });
-  }.bind(this);
+  };
 
   this.deleteSupplement = function(supplement) {
     $http.delete(`http://localhost:3000/supplements/${supplement._id}`)
     .then(() => {
-      this.supplements.splice(this.supplements.indexOf(supplement), 1);
+      ParseService.supplements.splice(ParseService.supplements.indexOf(supplement), 1);
+      ParseService.update();
     }, (err) => {
       console.log(err);
     });
-  }.bind(this);
+  };
 
   this.updateSupplement = function(updated) {
     if (updated.name) this.currentresource.name = updated.name;
@@ -108,9 +85,10 @@ function ResourceController($http, ParseService) {
     if (updated.sideEffects) this.currentresource.sideEffects = updated.sideEffects.split(',') || updated.sideEffects;
     $http.put('http://localhost:3000/supplements', this.currentresource)
       .then(() => {
-        this.supplements = this.supplements.map(s => {
+        ParseService.supplements = ParseService.supplements.map(s => {
           return s._id === this.currentresource._id ? this.currentresource : s;
         });
+        ParseService.update();
         this.updated = {};
       }, (err) => {
         console.log(err);

@@ -59,35 +59,20 @@
 	  let $httpBackend;
 
 	  beforeEach(() => {
-
-	    let mockService = function ParseService() {
-	      const service = {};
-	      service.plantProps = ['commonName', 'scientificName', 'medicinalUses', 'nutritionalValue'];
-	      service.supplementProps = ['name', 'medicinalEffects', 'sideEffects'];
-	      service.constructResource = function(resource, newResource) {
-	        console.log('new resource passed from test as res.data', newResource);
-	        return function(updated) {
-	          let resourceProperties = service[resource + 'Props'];
-	          console.log('resourceProperties', resourceProperties);
-	          console.log('updated', updated);
-	          console.log('resource', resource);
-	          for (let i = 0; i < resourceProperties.length; i++) {
-	            if (updated[resourceProperties[i]] && Array.isArray(updated[resourceProperties[i]])) {
-	              newResource[resourceProperties[i]] = updated[resourceProperties[i]].split(',') || updated[resourceProperties[i]];
-	            } else {
-	              newResource[resourceProperties[i]] = updated[resourceProperties[i]];
-	            }
-	          }
-	          console.log('new resource', newResource);
-	          return newResource;
-	        };
-	      };
-	      return service;
-	    };
-
 	    angular.mock.module('HealthApp');
+	    angular.mock.module({
+	      'ParseService': {
+	        constructResource: function(updated) {
+	          for (let key in updated) {
+	            Array.isArray(updated[key]) ? updated[key] = updated[key].split(',') : updated[key];
+	          }
+	          console.log('updated', updated);
+	          return updated;
+	        }
+	      }
+	    });
 	    angular.mock.inject(function($controller, _$httpBackend_){
-	      rctrl = new $controller('ResourceController', {ParseService: mockService});
+	      rctrl = $controller('ResourceController', {});
 	      $httpBackend = _$httpBackend_;
 	    });
 	  });
@@ -104,7 +89,7 @@
 
 	  it('should get a list of plants', () => {
 	    $httpBackend.expectGET('http://localhost:3000/plants')
-	      .respond(200, {commonName: 'test', scientificName: 'test', medicinalUses: ['test'], nutritionalValue: ['test'], zone: 0});
+	      .respond(200, {commonName: 'test', scientificName: 'test', medicinalUses: ['test', 'test2'], nutritionalValue: ['test', 'test2'], zone: 0});
 
 	    rctrl.getPlants();
 	    $httpBackend.flush();
@@ -34889,18 +34874,10 @@
 	  };
 
 	  this.addPlant = function() {
-	    console.log('this.updated from ctrl', this.updated);
 	    $http.post('http://localhost:3000/plants', this.updated)
-	    .then((res) => {
-	      console.log('res data for test',res.data);
-	      let newResource = ParseService.constructResource('plant',  res.data)(this.updated);
-	      newResource.zone = parseInt(this.updated.zone);
-	      console.log('new resource from controller', newResource);
-	      this.plants.push(newResource);
-	      this.updated = {};
-	    }, (err) => {
+	    .then(ParseService.constructResource), (err) => {
 	      console.log(err);
-	    });
+	    };
 	  }.bind(this);
 
 	  this.deletePlant = function(plant) {
@@ -34941,7 +34918,8 @@
 	  this.addSupplement = function() {
 	    $http.post('http://localhost:3000/supplements', this.updated)
 	    .then((res) => {
-	      this.supplements.push(ParseService.constructResource('supplement', res.data)(this.updated));
+	      let newResource = ParseService.constructResource(res.data);
+	      this.supplements.push(newResource);
 	      this.updated = {};
 	    }, (err) => {
 	      console.log(err);
@@ -35085,24 +35063,20 @@
 	module.exports = function(app) {
 	  app.factory('ParseService', function() {
 	    const service = {};
-	    service.plantProps = ['commonName', 'scientificName', 'medicinalUses', 'nutritionalValue'];
-	    service.supplementProps = ['name', 'medicinalEffects', 'sideEffects'];
-	    service.constructResource = function(resource, newResource) {
-	      console.log('new resource passed from test as res.data', newResource);
-	      return function(updated) {
-	        let resourceProperties = service[resource + 'Props'];
-	        console.log('resourceProperties', resourceProperties);
-	        console.log('updated', updated);
-	        console.log('resource', resource);
-	        for (let i = 0; i < resourceProperties.length; i++) {
-	          if (updated[resourceProperties[i]] && Array.isArray(updated[resourceProperties[i]])) {
-	            newResource[resourceProperties[i]] = updated[resourceProperties[i]].split(',') || updated[resourceProperties[i]];
-	          } else {
-	            newResource[resourceProperties[i]] = updated[resourceProperties[i]];
-	          }
+	    service.plants = [];
+	    service.supplements = [];
+	    service.constructResource = function() {
+	      return function(addedResource) {
+	        let added = addedResource.data;
+	        for (let key in added) {
+	          if (key === 'zone') added[key] = parseInt(added[key]);
+	          added[key] = Array.isArray(added[key]) && added[key].length > 1 ? added[key].split(',') : added[key];
 	        }
-	        console.log('new resource', newResource);
-	        return newResource;
+	        if (added.commonName) this.plants.push(added);
+	        if (added.name) this.supplements.push(added);
+	        added = {};
+	        console.log('added', added);
+	        return added;
 	      };
 	    };
 	    return service;
