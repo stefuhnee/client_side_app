@@ -33,10 +33,11 @@ function ResourceController($http, ParseService) {
   };
 
   this.addPlant = function() {
+    console.log('this.updated from ctrl', this.updated);
     $http.post('http://localhost:3000/plants', this.updated)
     .then((res) => {
       console.log('res data for test',res.data);
-      let newResource = ParseService.constructResource('plant',  res.data)(this.updated);
+      let newResource = ParseService.constructResource(this.updated);
       newResource.zone = parseInt(this.updated.zone);
       console.log('new resource from controller', newResource);
       this.plants.push(newResource);
@@ -83,8 +84,9 @@ function ResourceController($http, ParseService) {
 
   this.addSupplement = function() {
     $http.post('http://localhost:3000/supplements', this.updated)
-    .then((res) => {
-      this.supplements.push(ParseService.constructResource('supplement', res.data)(this.updated));
+    .then(() => {
+      let newResource = ParseService.constructResource(this.updated);
+      this.supplements.push(newResource);
       this.updated = {};
     }, (err) => {
       console.log(err);

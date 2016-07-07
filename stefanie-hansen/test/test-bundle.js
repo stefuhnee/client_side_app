@@ -59,9 +59,35 @@
 	  let $httpBackend;
 
 	  beforeEach(() => {
+
+	    let mockService = function ParseService() {
+	      const service = {};
+	      service.plantProps = ['commonName', 'scientificName', 'medicinalUses', 'nutritionalValue'];
+	      service.supplementProps = ['name', 'medicinalEffects', 'sideEffects'];
+	      service.constructResource = function(resource, newResource) {
+	        console.log('new resource passed from test as res.data', newResource);
+	        return function(updated) {
+	          let resourceProperties = service[resource + 'Props'];
+	          console.log('resourceProperties', resourceProperties);
+	          console.log('updated', updated);
+	          console.log('resource', resource);
+	          for (let i = 0; i < resourceProperties.length; i++) {
+	            if (updated[resourceProperties[i]] && Array.isArray(updated[resourceProperties[i]])) {
+	              newResource[resourceProperties[i]] = updated[resourceProperties[i]].split(',') || updated[resourceProperties[i]];
+	            } else {
+	              newResource[resourceProperties[i]] = updated[resourceProperties[i]];
+	            }
+	          }
+	          console.log('new resource', newResource);
+	          return newResource;
+	        };
+	      };
+	      return service;
+	    };
+
 	    angular.mock.module('HealthApp');
 	    angular.mock.inject(function($controller, _$httpBackend_){
-	      rctrl = new $controller('ResourceController');
+	      rctrl = new $controller('ResourceController', {ParseService: mockService});
 	      $httpBackend = _$httpBackend_;
 	    });
 	  });
@@ -177,39 +203,6 @@
 	  });
 	});
 
-	describe('directive tests', () => {
-	  let $httpBackend;
-	  let $scope;
-	  let $compile;
-
-	  beforeEach(() => {
-	    angular.mock.module('HealthApp');
-	    angular.mock.inject(function(_$httpBackend_, $rootScope, _$compile_) {
-	      $scope = $rootScope.$new();
-	      $compile = _$compile_;
-	      $httpBackend = _$httpBackend_;
-	    });
-	  });
-
-	  // it('should have list the common name of resources', () => {
-	  //   $httpBackend.expectGET('./templates/list.html')
-	  //     .respond(200, listTemplate);
-	  //   $httpBackend.expectGET('./templates/form.html')
-	  //     .respond(200, formTemplate);
-	  //   $httpBackend.expectGET('./templates/item.html')
-	  //     .respond(200, itemTemplate);
-	  //
-	  //   $scope.data = [{commonName: 'test'}];
-	  //   let element = angular.element('<body ng-controller="ResourceController as rc"><list-directive ng-repeat="datum in data"></list-directive></body>');
-	  //   let link = $compile(element);
-	  //   let directive = link($scope);
-	  //   $scope.$digest();
-	  //   $httpBackend.flush();
-	  //
-	  //   console.log(directive);
-	  // });
-	});
-
 	describe('Parse service tests', () => {
 	  let parseService;
 	  console.log('parse service', parseService);
@@ -220,6 +213,7 @@
 	      parseService = ParseService;
 	    });
 	  });
+
 	  it('should have a method to add a resource', () => {
 	    expect(typeof parseService.constructResource).toBe('function');
 	  });
@@ -34895,6 +34889,7 @@
 	  };
 
 	  this.addPlant = function() {
+	    console.log('this.updated from ctrl', this.updated);
 	    $http.post('http://localhost:3000/plants', this.updated)
 	    .then((res) => {
 	      console.log('res data for test',res.data);
@@ -35093,12 +35088,12 @@
 	    service.plantProps = ['commonName', 'scientificName', 'medicinalUses', 'nutritionalValue'];
 	    service.supplementProps = ['name', 'medicinalEffects', 'sideEffects'];
 	    service.constructResource = function(resource, newResource) {
+	      console.log('new resource passed from test as res.data', newResource);
 	      return function(updated) {
 	        let resourceProperties = service[resource + 'Props'];
 	        console.log('resourceProperties', resourceProperties);
 	        console.log('updated', updated);
 	        console.log('resource', resource);
-	        console.log('newResource', newResource);
 	        for (let i = 0; i < resourceProperties.length; i++) {
 	          if (updated[resourceProperties[i]] && Array.isArray(updated[resourceProperties[i]])) {
 	            newResource[resourceProperties[i]] = updated[resourceProperties[i]].split(',') || updated[resourceProperties[i]];
