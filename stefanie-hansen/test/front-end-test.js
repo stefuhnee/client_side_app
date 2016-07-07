@@ -142,6 +142,85 @@ describe('plants controller tests', () => {
   });
 });
 
+describe('directive tests', () => {
+  let $httpBackend;
+  let $scope;
+  let $compile;
+
+  beforeEach(() => {
+    angular.mock.module('HealthApp');
+    angular.mock.inject(function(_$httpBackend_, $rootScope, _$compile_) {
+      $scope = $rootScope.$new();
+      $compile = _$compile_;
+      $httpBackend = _$httpBackend_;
+    });
+  });
+
+  it('should have list the common name of resources', () => {
+    $httpBackend.expectGET('./templates/list.html')
+      .respond(200, listTemplate);
+
+    $scope.resource = {commonName: 'test'};
+    let element = angular.element('<list-directive resource="resource"></list-directive>');
+    element.data('$ngControllerController', {});
+    let link = $compile(element);
+    let directive = link($scope);
+    $scope.$digest();
+    $httpBackend.flush();
+
+    let textElement = directive.find('p')[1];
+    let text = textElement.innerText;
+    expect(text).toBe('test');
+  });
+
+  it('should only list the relevant resource', () => {
+    $httpBackend.expectGET('./templates/list.html')
+      .respond(200, listTemplate);
+
+    $scope.resource = {commonName: 'test'};
+    let element = angular.element('<list-directive resource="resource"></list-directive>');
+    element.data('$ngControllerController', {});
+    let link = $compile(element);
+    let directive = link($scope);
+    $scope.$digest();
+    $httpBackend.flush();
+
+    let hiddenResource = directive.find('.ng-hide');
+    expect(hiddenResource);
+  });
+
+  it('should show resource attributes on the item view', () => {
+    $httpBackend.expectGET('./templates/item.html')
+      .respond(200, itemTemplate);
+
+    $scope.resource = {commonName: 'test', scientificName: 'testScience', medicinalUses: ['test'], nutritionalValue: ['test'], zone: 0};
+    let element = angular.element('<item-directive currentresource="resource" plant="plant"></item-directive>');
+    element.data('$ngControllerController', {});
+    let link = $compile(element);
+    let directive = link($scope);
+    $scope.$digest();
+    $httpBackend.flush();
+
+    let listItems = directive.find('li');
+    expect(listItems.length).toBe(5);
+  });
+
+  it('should have forms to add and update resources', () => {
+    $httpBackend.expectGET('./templates/form.html')
+      .respond(200, formTemplate);
+    $scope.resource = {commonName: 'test', scientificName: 'testScience', medicinalUses: ['test'], nutritionalValue: ['test'], zone: 0};
+    let element = angular.element('<form-directive resource="plant" currentresource="resource"></form-directive>');
+    element.data('$ngControllerController', {});
+    let link = $compile(element);
+    let directive = link($scope);
+    $scope.$digest();
+    $httpBackend.flush();
+
+    let inputs = directive.find('input');
+    expect(inputs.length).toBe(5);
+  });
+});
+
 describe('Parse service tests', () => {
   let parseService;
   console.log('parse service', parseService);
