@@ -14,7 +14,7 @@ module.exports = function(app) {
         $scope.toggleItem = controller.toggleItem;
         $scope.currentresource = controller.currentresource;
       },
-      require: '^^ngController'
+      require: '^ngController'
     };
   });
 };

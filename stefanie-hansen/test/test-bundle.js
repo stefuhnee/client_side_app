@@ -181,13 +181,19 @@
 	  let $httpBackend;
 	  let $scope;
 	  let $compile;
+	  let createController;
 
 	  beforeEach(() => {
 	    angular.mock.module('HealthApp');
-	    angular.mock.inject(function(_$httpBackend_, $rootScope, _$compile_) {
+	    angular.mock.inject(function(_$httpBackend_, $rootScope, _$compile_, $controller) {
 	      $scope = $rootScope.$new();
 	      $compile = _$compile_;
 	      $httpBackend = _$httpBackend_;
+	      createController = function() {
+	        return $controller('ResourceController', {
+	          '$scope': $scope
+	        });
+	      };
 	    });
 	  });
 
@@ -199,14 +205,16 @@
 	    $httpBackend.expectGET('./templates/item.html')
 	      .respond(200, itemTemplate);
 
+	    let controller = createController();
 	    $scope.data = [{commonName: 'test'}];
-	    let element = angular.element('<list-directive ng-repeat="datum in data"></list-directive>');
-	    element.data('$ngControllerController', {});
+	    let element = angular.element('<body ng-controller="ResourceController as rc"><list-directive ng-repeat="datum in data"></list-directive></body>');
+	    element.data('$ngController', {});
 	    let link = $compile(element);
 	    let directive = link($scope);
 	    $scope.$digest();
 	    $httpBackend.flush();
 
+	    expect(true).toBe(true);
 	    console.log(directive);
 	  });
 	});
@@ -35036,7 +35044,7 @@
 	      link: function($scope, elem, attr, controller) {
 	        $scope.toggleItem = controller.toggleItem;
 	      },
-	      require: '^^ngController'
+	      require: '^ngController'
 	    };
 	  });
 	};
@@ -35062,7 +35070,7 @@
 	        $scope.toggleItem = controller.toggleItem;
 	        $scope.currentresource = controller.currentresource;
 	      },
-	      require: '^^ngController'
+	      require: '^ngController'
 	    };
 	  });
 	};

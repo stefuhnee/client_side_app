@@ -12,7 +12,7 @@ module.exports = function(app) {
       link: function($scope, elem, attr, controller) {
         $scope.toggleItem = controller.toggleItem;
       },
-      require: '^^ngController'
+      require: '^ngController'
     };
   });
 };
