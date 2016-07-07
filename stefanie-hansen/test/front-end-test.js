@@ -135,40 +135,53 @@ describe('directive tests', () => {
   let $httpBackend;
   let $scope;
   let $compile;
-  let createController;
 
   beforeEach(() => {
     angular.mock.module('HealthApp');
-    angular.mock.inject(function(_$httpBackend_, $rootScope, _$compile_, $controller) {
+    angular.mock.inject(function(_$httpBackend_, $rootScope, _$compile_) {
       $scope = $rootScope.$new();
       $compile = _$compile_;
       $httpBackend = _$httpBackend_;
-      createController = function() {
-        return $controller('ResourceController', {
-          '$scope': $scope
-        });
-      };
     });
   });
 
   it('should have list the common name of resources', () => {
     $httpBackend.expectGET('./templates/list.html')
       .respond(200, listTemplate);
-    $httpBackend.expectGET('./templates/form.html')
-      .respond(200, formTemplate);
-    $httpBackend.expectGET('./templates/item.html')
-      .respond(200, itemTemplate);
+    // $httpBackend.expectGET('./templates/form.html')
+    //   .respond(200, formTemplate);
+    // $httpBackend.expectGET('./templates/item.html')
+    //   .respond(200, itemTemplate);
 
-    let controller = createController();
-    $scope.data = [{commonName: 'test'}];
-    let element = angular.element('<body ng-controller="ResourceController as rc"><list-directive ng-repeat="datum in data"></list-directive></body>');
-    element.data('$ngController', {});
+    $scope.resource = {commonName: 'test'};
+    let element = angular.element('<list-directive resource="resource"></list-directive>');
+    element.data('$ngControllerController', {});
     let link = $compile(element);
     let directive = link($scope);
     $scope.$digest();
     $httpBackend.flush();
 
-    expect(true).toBe(true);
-    console.log(directive);
+    let textElement = directive.find('p')[1];
+    let text = textElement.innerText;
+    expect(text).toBe('test');
+  });
+
+  it('should only list the relevant resource', () => {
+    $httpBackend.expectGET('./templates/list.html')
+      .respond(200, listTemplate);
+    $scope.resource = {commonName: 'test'};
+    let element = angular.element('<list-directive resource="resource"></list-directive>');
+    element.data('$ngControllerController', {});
+    let link = $compile(element);
+    let directive = link($scope);
+    $scope.$digest();
+    $httpBackend.flush();
+
+    let hiddenResource = directive.find('.ng-hide');
+    expect(hiddenResource);
+  });
+
+  it('should show resource attributes on the item view', () => {
+
   });
 });
