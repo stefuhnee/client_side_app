@@ -22,30 +22,30 @@ module.exports = function(app) {
     };
 
     function fetchPlants() {
-      $http.get('http://localhost:3000/plants')
+      return $http.get('http://localhost:3000/plants')
       .then((res) => {
         service.plants = res.data;
-        console.log('res data from fetch palnts', res.data);
-        return service.plants;
       }, (err) => {
         console.log(err);
       });
     }
 
     function fetchSupplements() {
-      $http.get('http://localhost:3000/supplements')
+      return $http.get('http://localhost:3000/supplements')
       .then((res) => {
         service.supplements = res.data;
-        return service.supplements;
       }, (err) => {
         console.log(err);
       });
     }
 
-    service.update = function() {
+    service.update = function(cb) {
       console.log('attempting to update');
-      fetchSupplements();
-      fetchPlants();
+      fetchPlants().then(() => {
+        fetchSupplements().then(() => {
+          cb();
+        });
+      });
     };
 
     return service;

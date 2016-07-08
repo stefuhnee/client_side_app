@@ -5,8 +5,6 @@ module.exports = function(app) {
 };
 
 function ResourceController($http, ParseService) {
-  this.supplements = ParseService.supplements;
-  this.plants = ParseService.plants;
   this.$http = $http;
   this.mode = 'list';
   this.editing = false;
@@ -19,7 +17,12 @@ function ResourceController($http, ParseService) {
   }.bind(this);
 
   this.init = function() {
-    ParseService.update();
+    ParseService.update(() => {
+      this.supplements = ParseService.supplements;
+      this.plants = ParseService.plants;
+      console.log('this.supplements', this.supplements);
+      console.log('this.plants', this.plants);
+    });
   };
 
   this.addPlant = function() {
