@@ -15,7 +15,6 @@ module.exports = function(app) {
         }
         if (added.commonName) service.plants.push(added);
         if (added.name) service.supplements.push(added);
-        console.log('added', added);
         return added;
       };
     };
@@ -39,7 +38,6 @@ module.exports = function(app) {
     }
 
     service.update = function(cb) {
-      console.log('attempting to update');
       fetchPlants().then(() => {
         fetchSupplements().then(() => {
           cb();

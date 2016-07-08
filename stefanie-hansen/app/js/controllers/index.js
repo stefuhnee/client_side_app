@@ -70,24 +70,23 @@ function ResourceController($http, ParseService) {
 
   this.addSupplement = function() {
     $http.post('http://localhost:3000/supplements', this.updated)
-    .then((res) => {
-      let newResource = ParseService.constructResource(res.data);
-      ParseService.supplements.push(newResource);
-      ParseService.update(() => {
-        this.supplements = ParseService.supplements;
-        this.plants = ParseService.plants;
-      });
-      this.updated = {};
-    }, (err) => {
+    .then(ParseService.constructResource)
+    .then(ParseService.update(() => {
+      this.supplements = ParseService.supplements;
+      this.plants = ParseService.plants;
+    })), (err) => {
       console.log(err);
-    });
+    };
   };
 
   this.deleteSupplement = function(supplement) {
     $http.delete(`http://localhost:3000/supplements/${supplement._id}`)
     .then(() => {
       ParseService.supplements.splice(ParseService.supplements.indexOf(supplement), 1);
-      ParseService.update();
+      ParseService.update(() => {
+        this.supplements = ParseService.supplements;
+        this.plants = ParseService.plants;
+      });
     }, (err) => {
       console.log(err);
     });
@@ -102,7 +101,10 @@ function ResourceController($http, ParseService) {
         ParseService.supplements = ParseService.supplements.map(s => {
           return s._id === this.currentresource._id ? this.currentresource : s;
         });
-        ParseService.update();
+        ParseService.update(() => {
+          this.supplements = ParseService.supplements;
+          this.plants = ParseService.plants;
+        });
         this.updated = {};
       }, (err) => {
         console.log(err);
