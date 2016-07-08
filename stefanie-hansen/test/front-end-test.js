@@ -11,23 +11,59 @@ const listTemplate = require('../app/templates/list.html');
 describe('plants controller tests', () => {
   let rctrl;
   let $httpBackend;
+  let parseService;
+  let $http;
 
   beforeEach(() => {
     angular.mock.module('HealthApp');
-    angular.mock.module({
-      'ParseService': {
-        constructResource: function(updated) {
-          for (let key in updated) {
-            Array.isArray(updated[key]) ? updated[key] = updated[key].split(',') : updated[key];
-          }
-          console.log('updated', updated);
-          return updated;
-        }
-      }
-    });
-    angular.mock.inject(function($controller, _$httpBackend_){
+
+    angular.mock.inject(function($controller, _$httpBackend_, _$http_, ParseService){
+      $http = _$http_;
+      parseService = ParseService;
       rctrl = $controller('ResourceController', {});
       $httpBackend = _$httpBackend_;
+    });
+
+    angular.mock.module({
+      'ParseService': {
+        plants: [],
+        supplements: [],
+        constructResource: function() {
+          return function(addedResource) {
+            let added = addedResource.data;
+            for (let key in added) {
+              if (key === 'zone') added[key] = parseInt(added[key]);
+              added[key] = Array.isArray(added[key]) && added[key].length > 1 ? added[key].split(',') : added[key];
+            }
+            if (added.commonName) this.plants.push(added);
+            if (added.name) this.supplements.push(added);
+            return added;
+          };
+        },
+        fetchPlants: function() {
+          $http.get('http://localhost:3000/plants')
+          .then((res) => {
+            this.plants = res.data;
+          }, (err) => {
+            console.log(err);
+          });
+        },
+        fetchSupplements: function() {
+          return $http.get('http://localhost:3000/supplements')
+          .then((res) => {
+            this.supplements = res.data;
+          }, (err) => {
+            console.log(err);
+          });
+        },
+        update: function(cb) {
+          this.fetchPlants().then(() => {
+            this.fetchSupplements().then(() => {
+              cb();
+            });
+          });
+        }
+      }
     });
   });
 
@@ -37,8 +73,8 @@ describe('plants controller tests', () => {
   });
 
   it('should have a resouces arrays', () => {
-    expect(Array.isArray(rctrl.plants)).toBe(true);
-    expect(Array.isArray(rctrl.supplements)).toBe(true);
+    expect(Array.isArray(parseService.plants)).toBe(true);
+    expect(Array.isArray(parseService.supplements)).toBe(true);
   });
 
   it('should get a list of plants', () => {

@@ -57,23 +57,59 @@
 	describe('plants controller tests', () => {
 	  let rctrl;
 	  let $httpBackend;
+	  let parseService;
+	  let $http;
 
 	  beforeEach(() => {
 	    angular.mock.module('HealthApp');
-	    angular.mock.module({
-	      'ParseService': {
-	        constructResource: function(updated) {
-	          for (let key in updated) {
-	            Array.isArray(updated[key]) ? updated[key] = updated[key].split(',') : updated[key];
-	          }
-	          console.log('updated', updated);
-	          return updated;
-	        }
-	      }
-	    });
-	    angular.mock.inject(function($controller, _$httpBackend_){
+
+	    angular.mock.inject(function($controller, _$httpBackend_, _$http_, ParseService){
+	      $http = _$http_;
+	      parseService = ParseService;
 	      rctrl = $controller('ResourceController', {});
 	      $httpBackend = _$httpBackend_;
+	    });
+
+	    angular.mock.module({
+	      'ParseService': {
+	        plants: [],
+	        supplements: [],
+	        constructResource: function() {
+	          return function(addedResource) {
+	            let added = addedResource.data;
+	            for (let key in added) {
+	              if (key === 'zone') added[key] = parseInt(added[key]);
+	              added[key] = Array.isArray(added[key]) && added[key].length > 1 ? added[key].split(',') : added[key];
+	            }
+	            if (added.commonName) this.plants.push(added);
+	            if (added.name) this.supplements.push(added);
+	            return added;
+	          };
+	        },
+	        fetchPlants: function() {
+	          $http.get('http://localhost:3000/plants')
+	          .then((res) => {
+	            this.plants = res.data;
+	          }, (err) => {
+	            console.log(err);
+	          });
+	        },
+	        fetchSupplements: function() {
+	          return $http.get('http://localhost:3000/supplements')
+	          .then((res) => {
+	            this.supplements = res.data;
+	          }, (err) => {
+	            console.log(err);
+	          });
+	        },
+	        update: function(cb) {
+	          this.fetchPlants().then(() => {
+	            this.fetchSupplements().then(() => {
+	              cb();
+	            });
+	          });
+	        }
+	      }
 	    });
 	  });
 
@@ -83,8 +119,8 @@
 	  });
 
 	  it('should have a resouces arrays', () => {
-	    expect(Array.isArray(rctrl.plants)).toBe(true);
-	    expect(Array.isArray(rctrl.supplements)).toBe(true);
+	    expect(Array.isArray(parseService.plants)).toBe(true);
+	    expect(Array.isArray(parseService.supplements)).toBe(true);
 	  });
 
 	  it('should get a list of plants', () => {
@@ -118,7 +154,7 @@
 	    rctrl.updated = {commonName: 'test', scientificName: 'test', medicinalUses: ['test'], nutritionalValue: ['test'], zone: 0};
 	    rctrl.addPlant();
 	    $httpBackend.flush();
-	    expect(rctrl.updated).toEqual({});
+	    expect(rctrl.plants.length).toBe(1);
 	  });
 
 	  it('should add a supplement', () => {
@@ -185,6 +221,85 @@
 	    expect(rctrl.supplements[0].name).toBe('test2');
 	    expect(rctrl.supplements[0].medicinalEffects[0]).toBe('test2');
 	    expect(rctrl.supplements[0].sideEffects[0]).toBe('test');
+	  });
+	});
+
+	describe('directive tests', () => {
+	  let $httpBackend;
+	  let $scope;
+	  let $compile;
+
+	  beforeEach(() => {
+	    angular.mock.module('HealthApp');
+	    angular.mock.inject(function(_$httpBackend_, $rootScope, _$compile_) {
+	      $scope = $rootScope.$new();
+	      $compile = _$compile_;
+	      $httpBackend = _$httpBackend_;
+	    });
+	  });
+
+	  it('should have list the common name of resources', () => {
+	    $httpBackend.expectGET('./templates/list.html')
+	      .respond(200, listTemplate);
+
+	    $scope.resource = {commonName: 'test'};
+	    let element = angular.element('<list-directive resource="resource"></list-directive>');
+	    element.data('$ngControllerController', {});
+	    let link = $compile(element);
+	    let directive = link($scope);
+	    $scope.$digest();
+	    $httpBackend.flush();
+
+	    let textElement = directive.find('p')[1];
+	    let text = textElement.innerText;
+	    expect(text).toBe('test');
+	  });
+
+	  it('should only list the relevant resource', () => {
+	    $httpBackend.expectGET('./templates/list.html')
+	      .respond(200, listTemplate);
+
+	    $scope.resource = {commonName: 'test'};
+	    let element = angular.element('<list-directive resource="resource"></list-directive>');
+	    element.data('$ngControllerController', {});
+	    let link = $compile(element);
+	    let directive = link($scope);
+	    $scope.$digest();
+	    $httpBackend.flush();
+
+	    let hiddenResource = directive.find('.ng-hide');
+	    expect(hiddenResource);
+	  });
+
+	  it('should show resource attributes on the item view', () => {
+	    $httpBackend.expectGET('./templates/item.html')
+	      .respond(200, itemTemplate);
+
+	    $scope.resource = {commonName: 'test', scientificName: 'testScience', medicinalUses: ['test'], nutritionalValue: ['test'], zone: 0};
+	    let element = angular.element('<item-directive currentresource="resource" plant="plant"></item-directive>');
+	    element.data('$ngControllerController', {});
+	    let link = $compile(element);
+	    let directive = link($scope);
+	    $scope.$digest();
+	    $httpBackend.flush();
+
+	    let listItems = directive.find('li');
+	    expect(listItems.length).toBe(5);
+	  });
+
+	  it('should have forms to add and update resources', () => {
+	    $httpBackend.expectGET('./templates/form.html')
+	      .respond(200, formTemplate);
+	    $scope.resource = {commonName: 'test', scientificName: 'testScience', medicinalUses: ['test'], nutritionalValue: ['test'], zone: 0};
+	    let element = angular.element('<form-directive resource="plant" currentresource="resource"></form-directive>');
+	    element.data('$ngControllerController', {});
+	    let link = $compile(element);
+	    let directive = link($scope);
+	    $scope.$digest();
+	    $httpBackend.flush();
+
+	    let inputs = directive.find('input');
+	    expect(inputs.length).toBe(5);
 	  });
 	});
 
@@ -34846,8 +34961,6 @@
 	};
 
 	function ResourceController($http, ParseService) {
-	  this.supplements = [];
-	  this.plants = [];
 	  this.$http = $http;
 	  this.mode = 'list';
 	  this.editing = false;
@@ -34860,34 +34973,35 @@
 	  }.bind(this);
 
 	  this.init = function() {
-	    this.getSupplements();
-	    this.getPlants();
-	  };
-
-	  this.getPlants = function() {
-	    $http.get('http://localhost:3000/plants')
-	    .then((res) => {
-	      this.plants = res.data;
-	    }, (err) => {
-	      console.log(err);
+	    ParseService.update(() => {
+	      this.supplements = ParseService.supplements;
+	      this.plants = ParseService.plants;
 	    });
 	  };
 
 	  this.addPlant = function() {
 	    $http.post('http://localhost:3000/plants', this.updated)
-	    .then(ParseService.constructResource), (err) => {
+	    .then(ParseService.constructResource)
+	    .then(ParseService.update(() => {
+	      this.supplements = ParseService.supplements;
+	      this.plants = ParseService.plants;
+	    })), (err) => {
 	      console.log(err);
 	    };
-	  }.bind(this);
+	  };
 
 	  this.deletePlant = function(plant) {
 	    $http.delete(`http://localhost:3000/plants/${plant._id}`)
 	    .then(() => {
-	      this.plants.splice(this.plants.indexOf(plant), 1);
+	      ParseService.plants.splice(ParseService.plants.indexOf(plant), 1);
+	      ParseService.update(() => {
+	        this.supplements = ParseService.supplements;
+	        this.plants = ParseService.plants;
+	      });
 	    }, (err) => {
 	      console.log(err);
 	    });
-	  }.bind(this);
+	  };
 
 	  this.updatePlant = function(updated) {
 	    if (updated.commonName) this.currentresource.commonName = updated.commonName;
@@ -34897,8 +35011,12 @@
 	    if (updated.zone) this.currentresource.zone = parseInt(updated.zone);
 	    $http.put('http://localhost:3000/plants', this.currentresource)
 	      .then(() => {
-	        this.plants = this.plants.map(p => {
+	        ParseService.plants = ParseService.plants.map(p => {
 	          return p._id === this.currentresource._id ? this.currentresource : p;
+	        });
+	        ParseService.update(() => {
+	          this.supplements = ParseService.supplements;
+	          this.plants = ParseService.plants;
 	        });
 	      }, (err) => {
 	        console.log(err);
@@ -34906,34 +35024,29 @@
 	    this.updated = {};
 	  }.bind(this);
 
-	  this.getSupplements = function() {
-	    $http.get('http://localhost:3000/supplements')
-	    .then((res) => {
-	      this.supplements = res.data;
-	    }, (err) => {
-	      console.log(err);
-	    });
-	  }.bind(this);
-
 	  this.addSupplement = function() {
 	    $http.post('http://localhost:3000/supplements', this.updated)
-	    .then((res) => {
-	      let newResource = ParseService.constructResource(res.data);
-	      this.supplements.push(newResource);
-	      this.updated = {};
-	    }, (err) => {
+	    .then(ParseService.constructResource)
+	    .then(ParseService.update(() => {
+	      this.supplements = ParseService.supplements;
+	      this.plants = ParseService.plants;
+	    })), (err) => {
 	      console.log(err);
-	    });
-	  }.bind(this);
+	    };
+	  };
 
 	  this.deleteSupplement = function(supplement) {
 	    $http.delete(`http://localhost:3000/supplements/${supplement._id}`)
 	    .then(() => {
-	      this.supplements.splice(this.supplements.indexOf(supplement), 1);
+	      ParseService.supplements.splice(ParseService.supplements.indexOf(supplement), 1);
+	      ParseService.update(() => {
+	        this.supplements = ParseService.supplements;
+	        this.plants = ParseService.plants;
+	      });
 	    }, (err) => {
 	      console.log(err);
 	    });
-	  }.bind(this);
+	  };
 
 	  this.updateSupplement = function(updated) {
 	    if (updated.name) this.currentresource.name = updated.name;
@@ -34941,8 +35054,12 @@
 	    if (updated.sideEffects) this.currentresource.sideEffects = updated.sideEffects.split(',') || updated.sideEffects;
 	    $http.put('http://localhost:3000/supplements', this.currentresource)
 	      .then(() => {
-	        this.supplements = this.supplements.map(s => {
+	        ParseService.supplements = ParseService.supplements.map(s => {
 	          return s._id === this.currentresource._id ? this.currentresource : s;
+	        });
+	        ParseService.update(() => {
+	          this.supplements = ParseService.supplements;
+	          this.plants = ParseService.plants;
 	        });
 	        this.updated = {};
 	      }, (err) => {
@@ -35061,10 +35178,11 @@
 	'use strict';
 
 	module.exports = function(app) {
-	  app.factory('ParseService', function() {
+	  app.factory('ParseService', function($http) {
 	    const service = {};
 	    service.plants = [];
 	    service.supplements = [];
+
 	    service.constructResource = function() {
 	      return function(addedResource) {
 	        let added = addedResource.data;
@@ -35072,13 +35190,39 @@
 	          if (key === 'zone') added[key] = parseInt(added[key]);
 	          added[key] = Array.isArray(added[key]) && added[key].length > 1 ? added[key].split(',') : added[key];
 	        }
-	        if (added.commonName) this.plants.push(added);
-	        if (added.name) this.supplements.push(added);
-	        added = {};
-	        console.log('added', added);
+	        if (added.commonName) service.plants.push(added);
+	        if (added.name) service.supplements.push(added);
 	        return added;
 	      };
 	    };
+
+	    function fetchPlants() {
+	      return $http.get('http://localhost:3000/plants')
+	      .then((res) => {
+	        service.plants = res.data;
+	      }, (err) => {
+	        console.log(err);
+	      });
+	    }
+
+	    function fetchSupplements() {
+	      return $http.get('http://localhost:3000/supplements')
+	      .then((res) => {
+	        service.supplements = res.data;
+	      }, (err) => {
+	        console.log(err);
+	      });
+	    }
+
+	    service.update = function(cb) {
+	      console.log('updating');
+	      fetchPlants().then(() => {
+	        fetchSupplements().then(() => {
+	          cb();
+	        });
+	      });
+	    };
+
 	    return service;
 	  });
 	};

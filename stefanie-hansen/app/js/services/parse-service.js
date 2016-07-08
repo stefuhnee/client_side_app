@@ -38,6 +38,7 @@ module.exports = function(app) {
     }
 
     service.update = function(cb) {
+      console.log('updating');
       fetchPlants().then(() => {
         fetchSupplements().then(() => {
           cb();
