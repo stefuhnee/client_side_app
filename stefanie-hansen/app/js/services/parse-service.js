@@ -16,7 +16,6 @@ module.exports = function(app) {
         if (added.commonName) service.plants.push(added);
         if (added.name) service.supplements.push(added);
         console.log('added', added);
-        service.update();
         return added;
       };
     };

@@ -20,14 +20,16 @@ function ResourceController($http, ParseService) {
     ParseService.update(() => {
       this.supplements = ParseService.supplements;
       this.plants = ParseService.plants;
-      console.log('this.supplements', this.supplements);
-      console.log('this.plants', this.plants);
     });
   };
 
   this.addPlant = function() {
     $http.post('http://localhost:3000/plants', this.updated)
-    .then(ParseService.constructResource), (err) => {
+    .then(ParseService.constructResource)
+    .then(ParseService.update(() => {
+      this.supplements = ParseService.supplements;
+      this.plants = ParseService.plants;
+    })), (err) => {
       console.log(err);
     };
   };
@@ -36,7 +38,10 @@ function ResourceController($http, ParseService) {
     $http.delete(`http://localhost:3000/plants/${plant._id}`)
     .then(() => {
       ParseService.plants.splice(ParseService.plants.indexOf(plant), 1);
-      ParseService.update();
+      ParseService.update(() => {
+        this.supplements = ParseService.supplements;
+        this.plants = ParseService.plants;
+      });
     }, (err) => {
       console.log(err);
     });
@@ -53,7 +58,10 @@ function ResourceController($http, ParseService) {
         ParseService.plants = ParseService.plants.map(p => {
           return p._id === this.currentresource._id ? this.currentresource : p;
         });
-        ParseService.update();
+        ParseService.update(() => {
+          this.supplements = ParseService.supplements;
+          this.plants = ParseService.plants;
+        });
       }, (err) => {
         console.log(err);
       });
@@ -65,7 +73,10 @@ function ResourceController($http, ParseService) {
     .then((res) => {
       let newResource = ParseService.constructResource(res.data);
       ParseService.supplements.push(newResource);
-      ParseService.update();
+      ParseService.update(() => {
+        this.supplements = ParseService.supplements;
+        this.plants = ParseService.plants;
+      });
       this.updated = {};
     }, (err) => {
       console.log(err);
