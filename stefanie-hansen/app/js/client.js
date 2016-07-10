@@ -7,12 +7,12 @@ const app = angular.module('HealthApp', [ngRoute]);
 
 app.config(function($routeProvider) {
   $routeProvider.when('/', {
-    templateUrl: './views/home.html',
-    controller: 'PenguinController',
-    controllerAs: 'penguinctrl'
+    templateUrl: './views/partials/home.html',
+    controller: 'ResourceController',
+    controllerAs: 'rc'
   })
   .when('/signin', {
-    templateUrl:'./views/signin.html',
+    templateUrl:'./views/partials/signin.html',
     controller: 'SigninController',
     controllerAs: 'signinctrl'
   });

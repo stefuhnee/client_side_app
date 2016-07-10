@@ -13,13 +13,13 @@ module.exports = function(app) {
         });
     };
 
-    service.signIn = function(user) {
+    service.logIn = function(user) {
       let base64Auth = btoa(user.username + ':' + user.password);
       let authString = 'Basic ' + base64Auth;
 
       return $http({
         url: 'http://localhost:3000/login',
-        method: 'POST',
+        method: 'GET',
         headers: {
           authorization: authString
         }

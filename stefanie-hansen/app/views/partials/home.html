@@ -1,0 +1,41 @@
+<main ng-init="rc.init()">
+
+  <section>
+    <h1>Plants</h1>
+
+    <div class="resource-list">
+      <list-directive resource="plant" plant="plant" type="edit" ng-click="rc.toggleItem(plant)" ng-repeat="plant in rc.plants" ng-show="rc.mode === 'list'"></list-directive>
+    </div>
+
+
+    <div ng-show="rc.mode === 'item'" class="resource-list">
+      <item-directive plant="plant"  ng-click="rc.toggleItem()" currentresource="rc.currentresource" class="resource-list">
+      </item-directive>
+      <form-directive resource="plant" type="edit" updated="rc.updated" currentresource="rc.currentresource" class="resource-list"></form-directive>
+    </div>
+
+    <div class="resource-list">
+      <form-directive resource="plant" type="new" updated="rc.updated"></form-directive>
+    </div>
+
+  </section>
+
+  <section>
+    <h1>Supplements</h1>
+
+    <div class="resource-list">
+      <list-directive resource="supplement" supplement="supplement" type="edit" ng-click="rc.toggleItem(supplement)" ng-repeat="supplement in rc.supplements" ng-show="rc.mode === 'list'"></list-directive>
+    </div>
+
+    <div ng-show="rc.mode === 'item'" class="resource-list">
+      <item-directive supplement="supplement" ng-click="rc.toggleItem()" currentresource="rc.currentresource" class="resource-list">
+      </item-directive>
+      <form-directive resource="supplement" type="edit" updated="rc.updated" currentresource="rc.currentresource" class="resource-list"></form-directive>
+    </div>
+
+    <div class="resource-list">
+      <form-directive resource="supplement" type="new" updated="rc.updated"></form-directive>
+    </div>
+
+  </section>
+</main>

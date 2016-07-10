@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function(app) {
-  app.controller('SigninController', function($location, AuthService) {
+  app.controller('LoginController', function($location, AuthService) {
     this.goHome = function() {
       $location.url('/');
     };
@@ -16,8 +16,8 @@ module.exports = function(app) {
         });
     };
 
-    this.signIn = function(user) {
-      AuthService.signIn(user)
+    this.logIn = function(user) {
+      AuthService.logIn(user)
         .then((res) => {
           console.log(res, 'sign in res');
         });
