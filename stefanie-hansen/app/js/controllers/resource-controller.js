@@ -1,10 +1,11 @@
 'use strict';
 
 module.exports = function(app) {
-  app.controller('ResourceController', ['$http', 'ParseService', ResourceController]);
+  app.controller('ResourceController', ['$http', '$location', 'ParseService', 'AuthService', ResourceController]);
 };
 
-function ResourceController($http, ParseService) {
+function ResourceController($http, $location, ParseService, AuthService) {
+  this.$location = $location;
   this.$http = $http;
   this.mode = 'list';
   this.editing = false;
@@ -35,7 +36,13 @@ function ResourceController($http, ParseService) {
   };
 
   this.deletePlant = function(plant) {
-    $http.delete(`http://localhost:3000/plants/${plant._id}`)
+    $http({
+      method: 'DELETE',
+      headers: {
+        token: AuthService.getToken()
+      },
+      url: `http://localhost:3000/plants/${plant._id}`
+    })
     .then(() => {
       ParseService.plants.splice(ParseService.plants.indexOf(plant), 1);
       ParseService.update(() => {
@@ -43,6 +50,7 @@ function ResourceController($http, ParseService) {
         this.plants = ParseService.plants;
       });
     }, (err) => {
+      $location.url('/login');
       console.log(err);
     });
   };
@@ -80,7 +88,13 @@ function ResourceController($http, ParseService) {
   };
 
   this.deleteSupplement = function(supplement) {
-    $http.delete(`http://localhost:3000/supplements/${supplement._id}`)
+    $http({
+      method: 'DELETE',
+      headers: {
+        token: AuthService.getToken()
+      },
+      url: `http://localhost:3000/supplements/${supplement._id}`
+    })
     .then(() => {
       ParseService.supplements.splice(ParseService.supplements.indexOf(supplement), 1);
       ParseService.update(() => {
@@ -88,6 +102,7 @@ function ResourceController($http, ParseService) {
         this.plants = ParseService.plants;
       });
     }, (err) => {
+      $location.url('/login');
       console.log(err);
     });
   };

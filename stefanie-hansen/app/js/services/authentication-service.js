@@ -30,6 +30,7 @@ module.exports = function(app) {
     };
 
     service.getToken = function() {
+      console.log('token', token)
       return token;
     };
     return service;
