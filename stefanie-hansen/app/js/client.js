@@ -11,10 +11,15 @@ app.config(function($routeProvider) {
     controller: 'ResourceController',
     controllerAs: 'rc'
   })
-  .when('/signin', {
-    templateUrl:'./views/partials/signin.html',
-    controller: 'SigninController',
-    controllerAs: 'signinctrl'
+  .when('/login', {
+    templateUrl:'./views/partials/login.html',
+    controller: 'LogInController',
+    controllerAs: 'loginctrl'
+  })
+  .when('/signup', {
+    templateUrl:'./views/partials/signup.html',
+    controller: 'SignUpController',
+    controllerAs: 'signupctrl'
   });
 });
 
