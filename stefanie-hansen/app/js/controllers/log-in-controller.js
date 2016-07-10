@@ -2,6 +2,7 @@
 
 module.exports = function(app) {
   app.controller('LogInController', function($location, AuthService) {
+
     this.goHome = function() {
       $location.url('/');
     };
@@ -9,7 +10,7 @@ module.exports = function(app) {
     this.logIn = function(user) {
       AuthService.logIn(user)
         .then((res) => {
-          console.log(res, 'sign in res');
+          console.log(res);
         });
     };
   });

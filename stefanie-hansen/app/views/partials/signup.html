@@ -1,1 +1,9 @@
-
+<main>
+  <h1>Sign Up</h1>
+  <button ng-click="signupctrl.goHome()">Go Home</button>
+  <form ng-submit="signupctrl.signUp(signupctrl.newUser)">
+    <input type="text" ng-model="signupctrl.newUser.username"></input>
+    <input type="password" ng-model="signupctrl.newUser.password"></input>
+    <button type="submit">Sign Up</button>
+  </form>
+</main>
